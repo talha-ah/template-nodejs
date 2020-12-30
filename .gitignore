@@ -1,0 +1,11 @@
+node_modules
+
+nodemon.json
+
+data/*.png
+data/*.jpg
+data/*.jpeg
+*.lock
+*.log
+
+.env

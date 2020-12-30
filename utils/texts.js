@@ -1,0 +1,28 @@
+module.exports = {
+  errors: {
+    error: "There was an error!",
+    emailRequired: "Email is required",
+    emailExists: "Email already exists",
+    userNotFound: "User does not exist",
+    passwordRequired: "Password is required",
+    passwordInvalid: "Password is incorrect!",
+    userNameExists: "Username is not available!",
+    alreadyVerified: "Email is already verified",
+    emailInvalid: "No user found with that Email!",
+    notAuthorized: "Not authorized for this route!",
+    invalidToken: "Invalid or expired password reset token",
+    inactiveAccount: "Your account is not active! Kindly contact support!",
+  },
+  texts: {
+    allUsers: "All users",
+    userData: "User data",
+    userCreated: "User created",
+    userUpdated: "User updated",
+    userDeleted: "User deleted",
+    passwordSuccess: "Password updated",
+    loginSuccess: "User login successful",
+    emailVerified: "Email verified successfully",
+    passwordResetSent: "Password reset link sent",
+    emailVerificationSent: "Email verfication link sent",
+  },
+};
