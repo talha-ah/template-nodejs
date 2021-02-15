@@ -5,6 +5,7 @@ const hpp = require("hpp");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 const mongoose = require("mongoose");
+const compression = require('compression');
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 
@@ -22,6 +23,7 @@ module.exports = (app) => {
   app.use(helmet());
   app.use(xss());
   app.use(hpp());
+  app.use(compression());
   app.use(express.json());
   app.use(limiter);
   app.use(express.static("/public"));
