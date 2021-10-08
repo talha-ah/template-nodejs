@@ -1,29 +1,29 @@
-require("express-async-errors");
-const dotenv = require("dotenv");
-const express = require("express");
-const mongoose = require("mongoose");
-const Colors = require("./utils/Colors");
+require("express-async-errors")
+const dotenv = require("dotenv")
+const express = require("express")
+const mongoose = require("mongoose")
+const Colors = require("./utils/Colors")
 
 // Load env vars
-dotenv.config({ path: ".env.dev" });
+dotenv.config({ path: ".env" })
 
 // App initialization
-const app = express();
+const app = express()
 
 // Pre-route middlewares
-require("./middlewares/pre-route")(app);
+require("./middlewares/pre-route")(app)
 
 // API routes
-app.use("/api", require("./routes"));
+app.use("/api", require("./routes"))
 
 // Ping route for testing connection
-app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
+app.get("/ping", (req, res) => res.status(200).send("Hello world!"))
 
 // Error middlewares
-require("./middlewares/error")(app);
+require("./middlewares/error")(app)
 
 // PORT Handling
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080
 
 // Connecting to Database and listening to server
 mongoose
@@ -35,26 +35,26 @@ mongoose
   })
   .then((result) => {
     const server = app.listen(PORT, () => {
-      console.log(Colors.Reset, Colors.FgMagenta, `App listening: ${PORT}`);
-    });
-    const IOImport = require("./socket/socket");
-    const io = IOImport.init(server);
+      console.log(Colors.Reset, Colors.FgMagenta, `App listening: ${PORT}`)
+    })
+    const IOImport = require("./socket/socket")
+    const io = IOImport.init(server)
     io.on("connection", (socket) => {
       console.log(
         Colors.FgMagenta,
         "Connection Established, Total = ",
         IOImport.addUser(socket).length
-      );
+      )
 
       socket.on("disconnect", () => {
         console.log(
           Colors.FgRed,
           "Connection Demolished, Total = ",
           IOImport.deleteUser(socket).length
-        );
-      });
-    });
+        )
+      })
+    })
   })
   .catch((err) => {
-    console.log("[App.Mongoose]", err);
-  });
+    console.log("[App.Mongoose]", err)
+  })

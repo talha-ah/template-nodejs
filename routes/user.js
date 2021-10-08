@@ -1,20 +1,12 @@
-const router = require("express").Router();
+const router = require("express").Router()
 
-const auth = require("../middlewares/auth");
-const upload = require("../middlewares/multer");
-const userController = require("../controllers/user");
+const auth = require("../middlewares/auth")
+const userController = require("../controllers/user")
 
-// GETS
-router.get("/", auth("admin"), userController.getAll);
-router.get("/:userId", auth("admin"), userController.getOne);
+router.get("/", auth(), userController.getAll)
+router.get("/:userId", auth(), userController.getOne)
+router.post("/", auth(), userController.create)
+router.put("/:userId", auth(), userController.update)
+router.delete("/:userId", auth(), userController.delete)
 
-// POSTS
-router.post("/", auth("user"), upload("image"), userController.create);
-
-// PUTS
-router.put("/:userId", auth("admin"), upload("image"), userController.update);
-
-// DELETES
-router.delete("/:userId", auth("admin"), userController.delete);
-
-module.exports = router;
+module.exports = router

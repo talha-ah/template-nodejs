@@ -1,45 +1,43 @@
-const user = require("../models/user");
-
-var io;
-var users = [];
+var io
+var users = []
 
 module.exports = {
   init: (httpServer) => {
     io = require("socket.io")(httpServer, {
       cors: {
-        origin: "http://localhost:3000",
+        origin: process.env.CLIENT_URL,
         methods: ["GET", "POST"],
       },
-    });
-    return io;
+    })
+    return io
   },
   getIO: () => {
     if (!io) {
-      throw new Error("Socket.io not initialized!");
+      throw new Error("Socket.io not initialized!")
     }
-    return io;
+    return io
   },
   getUsers: () => {
-    return users;
+    return users
   },
   getUser: (socketId) => {
-    const user = users.find((user) => user.id === socketId);
-    return user;
+    const user = users.find((user) => user.id === socketId)
+    return user
   },
   getUserById: (userId) => {
-    const user = users.find((user) => String(user.userId) === String(userId));
-    return user;
+    const user = users.find((user) => String(user.userId) === String(userId))
+    return user
   },
   addUser: (socket) => {
     users.push({
       id: socket.id,
       userId: socket.handshake.query.userId,
       socket,
-    });
-    return users;
+    })
+    return users
   },
   deleteUser: (socket) => {
-    users = users.filter((user) => user.id !== socket.id);
-    return users;
+    users = users.filter((user) => user.id !== socket.id)
+    return users
   },
-};
+}

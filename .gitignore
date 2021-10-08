@@ -1,11 +1,9 @@
 node_modules
-
 nodemon.json
-
-data/*.png
-data/*.jpg
-data/*.jpeg
+uploads/*.png
+uploads/*.jpg
+uploads/*.jpeg
+package-lock.json
 *.lock
 *.log
-
 .env

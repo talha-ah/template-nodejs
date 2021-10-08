@@ -1,5 +1,7 @@
+const crypto = require("crypto")
+
 module.exports = {
-  randomFunction: () => {
-    console.log("");
+  randomGenerator: (bytes = 32) => {
+    crypto.randomBytes(bytes).toString("hex")
   },
-};
+}
