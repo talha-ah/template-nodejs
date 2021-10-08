@@ -1,9 +1,13 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const Schema = require("mongoose").Schema
 
 const userSchema = new Schema(
   {
-    name: {
+    firstName: {
+      trim: true,
+      type: String,
+      required: true,
+    },
+    lastName: {
       type: String,
       trim: true,
     },
@@ -11,9 +15,11 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       unique: true,
+      required: true,
     },
     password: {
       type: String,
+      required: true,
     },
     image: {
       type: String,
@@ -24,18 +30,15 @@ const userSchema = new Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    isVerified: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["pending", "active", "inactive"],
+      default: "pending",
     },
   },
   {
     timestamps: true,
   }
-);
+)
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model("user", userSchema)

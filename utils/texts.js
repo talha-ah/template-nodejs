@@ -11,6 +11,7 @@ module.exports = {
     emailInvalid: "No user found with that Email!",
     notAuthorized: "Not authorized for this route!",
     invalidToken: "Invalid or expired password reset token",
+    pendingEmailVerification: "Email verification required",
     inactiveAccount: "Your account is not active! Kindly contact support!",
   },
   texts: {
@@ -25,4 +26,4 @@ module.exports = {
     passwordResetSent: "Password reset link sent",
     emailVerificationSent: "Email verfication link sent",
   },
-};
+}

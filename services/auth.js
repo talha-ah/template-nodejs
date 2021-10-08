@@ -27,6 +27,10 @@ class AuthService {
   async login(data) {
     const user = await UserModel.findOne({ email: data.email }).lean()
     if (!user) throw new CustomError(Texts.errors.emailInvalid)
+    if (user.status === "inactive")
+      throw new CustomError(Texts.errors.inactiveAccount)
+    if (user.status === "pending")
+      throw new CustomError(Texts.errors.pendingEmailVerification)
 
     const isCorrect = bcrypt.compareSync(data.password, user.password)
     if (!isCorrect) throw new CustomError(Texts.errors.passwordInvalid)
@@ -41,7 +45,8 @@ class AuthService {
   async verifyEmailRequest(data) {
     const user = await UserModel.findOne({ email: data.email }).lean()
     if (!user) throw new CustomError(Texts.errors.emailInvalid)
-    if (user.isVerified) throw new CustomError(Texts.errors.alreadyVerified)
+    if (user.status !== "pending")
+      throw new CustomError(Texts.errors.alreadyVerified)
 
     const token = JWT.sign({ email: data.email }, ENV.JWT_SECRET)
 
@@ -52,7 +57,7 @@ class AuthService {
       subject: `${ENV.APP_NAME} - Verify your email`,
       body: EmailTemplate({
         url: url,
-        name: user.first_name,
+        name: user.firstName,
         buttonText: "Verify Email",
         message: "Verify your email",
       }),
@@ -67,7 +72,7 @@ class AuthService {
 
     await UserModel.updateOne(
       { email: token.email },
-      { $set: { isVerified: true } }
+      { $set: { status: "active" } }
     )
 
     return
@@ -86,7 +91,7 @@ class AuthService {
       subject: `${ENV.APP_NAME} - Verify your email`,
       body: EmailTemplate({
         url: url,
-        name: user.first_name,
+        name: user.firstName,
         buttonText: "Reset Password",
         message: "Reset your password",
       }),
