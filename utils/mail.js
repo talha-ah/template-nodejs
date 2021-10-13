@@ -1,9 +1,10 @@
 const nodemailer = require("nodemailer")
-const CustomError = require("../utils/customError")
+
+const { CustomError } = require("@utils/customError")
 
 const ENV = process.env
 
-class MailService {
+class EMailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
       host: ENV.MAILER_HOST,
@@ -34,4 +35,6 @@ class MailService {
   }
 }
 
-module.exports = new MailService()
+module.exports = {
+  emailService: new EMailService(),
+}

@@ -1,5 +1,7 @@
 const multer = require("multer")
 
+const { CustomError } = require("@utils/customError")
+
 const storage = (field) =>
   multer.diskStorage({
     destination: (req, file, cb) => {
@@ -14,7 +16,7 @@ const fileFilter = (filters) => (req, file, cb) => {
   if (filters.some((item) => item === file.mimetype)) {
     cb(null, true)
   } else {
-    cb(new Error("Wrong extension type"), false)
+    cb(new CustomError("Wrong extension type"), false)
   }
 }
 

@@ -1,6 +1,6 @@
-const CustomError = require("../utils/customError")
+const { CustomError } = require("@utils/customError")
 
-export const handleError = ({ error, value }) => {
+function joiError({ error, value }) {
   if (error) {
     const { details } = error
     const message = details.map((i) => i.message).join(",")
@@ -8,4 +8,8 @@ export const handleError = ({ error, value }) => {
     throw new CustomError(message, 405)
   }
   return value
+}
+
+module.exports = {
+  joiError,
 }

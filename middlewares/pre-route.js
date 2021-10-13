@@ -10,10 +10,13 @@ const mongoose = require("mongoose")
 const mongoSanitize = require("express-mongo-sanitize")
 
 module.exports = (app) => {
-  mongoose.set("debug", true)
+  if (process.env.NODE_ENV === "development") {
+    mongoose.set("debug", true)
+    app.use(morgan("dev"))
+  }
+
   app.options("*", cors())
   app.use(cors())
-  app.use(morgan("dev"))
   app.use(mongoSanitize())
   app.use(helmet())
   app.use(xss())

@@ -1,4 +1,5 @@
-const Schema = require("mongoose").Schema
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
 
 const userSchema = new Schema(
   {
@@ -36,9 +37,7 @@ const userSchema = new Schema(
       default: "pending",
     },
   },
-  {
-    timestamps: true,
-  }
+  { versionKey: false, timestamps: true }
 )
 
 module.exports = mongoose.model("user", userSchema)

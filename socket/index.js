@@ -1,6 +1,8 @@
 var io
 var users = []
 
+const { CustomError } = require("@utils/customError")
+
 module.exports = {
   init: (httpServer) => {
     io = require("socket.io")(httpServer, {
@@ -13,7 +15,7 @@ module.exports = {
   },
   getIO: () => {
     if (!io) {
-      throw new Error("Socket.io not initialized!")
+      throw new CustomError("Socket.io not initialized!")
     }
     return io
   },

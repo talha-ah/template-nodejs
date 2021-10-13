@@ -1,6 +1,7 @@
 const JWT = require("jsonwebtoken")
-const User = require("../models/user")
-const CustomError = require("../utils/customError")
+
+const UserModel = require("@app/users/models")
+const { CustomError } = require("@utils/customError")
 
 /**
  * If no role is passed the default role is user
@@ -22,17 +23,17 @@ function auth(role = "user") {
 
     const decoded = JWT.verify(token, process.env.JWT_SECRET)
 
-    let user = await User.findById(decoded.id)
+    let user = await UserModel.findById(decoded.id).lean()
     if (!user)
       throw new CustomError("Unauthorized access: User does not exist", 401)
-    else if (!user.isActive)
+    else if (user.status === "inactive")
       throw new CustomError("Account inactive: Kindly contact support", 401)
-    else if (!user.isVerified)
+    else if (user.status === "pending")
       throw new CustomError("Please verify email address first", 401)
     if (role !== user.role) throw new CustomError("Unauthorized access", 401)
 
     req.user = user
-    req.userId = user._id
+    req.userId = String(user._id)
 
     next()
   }
