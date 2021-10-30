@@ -1,4 +1,4 @@
-const { CustomError } = require("@utils/customError")
+const { CustomError } = require("../utils/customError")
 
 function joiError({ error, value }) {
   if (error) {

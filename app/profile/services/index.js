@@ -1,6 +1,6 @@
-const { errors } = require("@utils/texts")
-const { CustomError } = require("@utils/customError")
-const { hash, compareHash } = require("@utils/helpers")
+const { errors } = require("../../../utils/texts")
+const { CustomError } = require("../../../utils/customError")
+const { hash, compareHash } = require("../../../utils/helpers")
 
 const Model = require("../../users/models")
 
@@ -11,7 +11,7 @@ class Service {
       __v: 0,
     }).lean()
 
-    if (!user) throw new CustomError(errors.userNotFound)
+    if (!user) throw new CustomError(errors.userNotFound, 404)
 
     return user
   }
@@ -32,13 +32,13 @@ class Service {
 
   async updatePassword(data) {
     if (data.old_password === data.password)
-      throw new CustomError(errors.samePassword, 404)
+      throw new CustomError(errors.samePassword, 400)
 
     let user = await Model.findById(data.userId)
     if (!user) throw new CustomError(errors.userNotFound, 404)
 
     let check = compareHash(data.old_password, user.password)
-    if (!check) throw new CustomError(errors.passwordInvalid, 404)
+    if (!check) throw new CustomError(errors.passwordInvalid, 406)
 
     data.password = hash(data.password)
 

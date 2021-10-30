@@ -1,6 +1,6 @@
 const multer = require("multer")
 
-const { CustomError } = require("@utils/customError")
+const { CustomError } = require("../utils/customError")
 
 const storage = (field) =>
   multer.diskStorage({

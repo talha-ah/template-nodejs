@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer")
 
-const { CustomError } = require("@utils/customError")
+const { CustomError } = require("../utils/customError")
 
 const ENV = process.env
 

@@ -1,6 +1,5 @@
 require("colors")
 require("express-async-errors")
-require("module-alias/register")
 const dotenv = require("dotenv")
 const express = require("express")
 
@@ -11,20 +10,20 @@ dotenv.config({ path: ".env" })
 const app = express()
 
 // Imports
-const connectDB = require("@config/db")
-const connectIO = require("@config/socket")
+const connectDB = require("./config/db")
+const connectIO = require("./config/socket")
 
 // Pre-route middlewares
-require("@middlewares/pre-route")(app)
+require("./middlewares/pre-route")(app)
 
 // Ping app for testing connection
 app.get("/ping", (req, res) => res.status(200).send("Hello world!"))
 
 // API routes
-require("@app")(app)
+require("./app")(app)
 
 // Error middlewares
-require("@middlewares/error")(app)
+require("./middlewares/error")(app)
 
 // PORT Handling
 const PORT = process.env.PORT || 8080
@@ -33,7 +32,7 @@ const PORT = process.env.PORT || 8080
 connectDB()
   .then(() => {
     const server = app.listen(PORT, () => {
-      console.log(`[App listening]: ${PORT}`.yellow)
+      console.log(`App listening at port:`, String(PORT).yellow)
     })
     connectIO(server)
   })

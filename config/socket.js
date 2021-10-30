@@ -1,5 +1,5 @@
-const IOImport = require("@socket")
-const { log } = require("@utils/helpers")
+const IOImport = require("../socket")
+const { log } = require("../utils/helpers")
 
 function connect(server) {
   const io = IOImport.init(server)

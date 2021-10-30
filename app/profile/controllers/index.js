@@ -1,5 +1,5 @@
-const { texts } = require("@utils/texts")
-const { CustomResponse } = require("@utils/response")
+const { texts } = require("../../../utils/texts")
+const { CustomResponse } = require("../../../utils/response")
 
 const Service = require("../services")
 const Validations = require("../validations")
@@ -44,7 +44,7 @@ class Contoller {
 
     const response = await Service.deactivateProfile(data)
 
-    res.status(201).json(CustomResponse(texts.userDeactivated, response))
+    res.status(200).json(CustomResponse(texts.userDeactivated, response))
   }
 }
 

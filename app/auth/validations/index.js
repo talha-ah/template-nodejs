@@ -1,16 +1,16 @@
 const Joi = require("joi")
 
-const { joiError } = require("@utils/joiError")
-const { errors } = require("@utils/texts")
+const { joiError } = require("../../../utils/joiError")
+const { errors } = require("../../../utils/texts")
 
 const schemas = {
   register: (data) => {
     const Validation = Joi.object().keys({
-      firstName: Joi.string().required().messages({
+      first_name: Joi.string().required().messages({
         "string.empty": errors.firstNameRequired,
         "any.required": errors.firstNameRequired,
       }),
-      lastName: Joi.string().required().messages({
+      last_name: Joi.string().required().messages({
         "string.empty": errors.lastNameRequired,
         "any.required": errors.lastNameRequired,
       }),

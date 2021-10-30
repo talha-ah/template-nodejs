@@ -1,7 +1,7 @@
 const Joi = require("joi")
 
-const { joiError } = require("@utils/joiError")
-const { errors } = require("@utils/texts")
+const { errors } = require("../../../utils/texts")
+const { joiError } = require("../../../utils/joiError")
 
 const schemas = {
   checkUserId: (data) => {

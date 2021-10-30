@@ -1,5 +1,5 @@
-const { texts } = require("@utils/texts")
-const { CustomResponse } = require("@utils/response")
+const { texts } = require("../../../utils/texts")
+const { CustomResponse } = require("../../../utils/response")
 
 const Service = require("../services")
 const Validations = require("../validations")
@@ -22,9 +22,7 @@ class Contoller {
   }
 
   async verifyEmailRequest(req, res) {
-    const data = await Validations.checkEmail({
-      email: req.params.email,
-    })
+    const data = await Validations.checkEmail(req.params)
 
     const response = await Service.verifyEmailRequest(data)
 
@@ -32,9 +30,7 @@ class Contoller {
   }
 
   async verifyEmail(req, res) {
-    const data = await Validations.checkToken({
-      token: req.params.token,
-    })
+    const data = await Validations.checkToken(req.params)
 
     const response = await Service.verifyEmail(data)
 
@@ -42,9 +38,7 @@ class Contoller {
   }
 
   async resetPasswordRequest(req, res) {
-    const data = await Validations.checkEmail({
-      email: req.params.email,
-    })
+    const data = await Validations.checkEmail(req.params)
 
     const response = await Service.resetPasswordRequest(data)
 

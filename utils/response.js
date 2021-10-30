@@ -1,4 +1,4 @@
-const { formatMesaage } = require("@utils/helpers")
+const { formatMesaage } = require("../utils/helpers")
 
 /**
  * Returns response object

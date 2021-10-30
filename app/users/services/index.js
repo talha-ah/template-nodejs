@@ -1,15 +1,14 @@
-const { log } = require("@utils/helpers")
-const { errors } = require("@utils/texts")
-const { CustomError } = require("@utils/customError")
+const { errors } = require("../../../utils/texts")
+const { CustomError } = require("../../../utils/customError")
 
 const Model = require("../models")
 
-const ENV = process.env
-
 class Service {
   async getAll(data) {
-    log(ENV.ADMIN_SECRET)
-    const users = await Model.find({}, { password: 0, __v: 0 }).lean()
+    const users = await Model.find(
+      { role: "user" },
+      { password: 0, __v: 0 }
+    ).lean()
 
     return users
   }

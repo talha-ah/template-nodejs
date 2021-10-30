@@ -1,5 +1,5 @@
-const { texts } = require("@utils/texts")
-const { CustomResponse } = require("@utils/response")
+const { texts } = require("../../../utils/texts")
+const { CustomResponse } = require("../../../utils/response")
 
 const Service = require("../services")
 const Validations = require("../validations")
@@ -12,9 +12,7 @@ class Contoller {
   }
 
   async getOne(req, res) {
-    const data = await Validations.checkUserId({
-      userId: req.params.id,
-    })
+    const data = await Validations.checkUserId(req.params)
 
     const response = await Service.getOne(data)
 
@@ -22,9 +20,7 @@ class Contoller {
   }
 
   async deleteOne(req, res) {
-    const data = await Validations.checkUserId({
-      userId: req.params.id,
-    })
+    const data = await Validations.checkUserId(req.params)
 
     const response = await Service.deleteOne(data)
 

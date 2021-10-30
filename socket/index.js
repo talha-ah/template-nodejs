@@ -1,7 +1,7 @@
 var io
 var users = []
 
-const { CustomError } = require("@utils/customError")
+const { CustomError } = require("../utils/customError")
 
 module.exports = {
   init: (httpServer) => {

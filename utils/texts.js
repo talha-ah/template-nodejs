@@ -18,16 +18,17 @@ const errors = {
   roleRequired: "Role is required",
   roleOnly: "Role must be [user, admin]",
   tokenRequired: "Token is required",
+  tokenNotFound: "Unauthorized access: Token not found",
   invalidToken: "Invalid or expired token",
   userNotFound: "User does not exist",
   userIdRequired: "User ID is required",
   userIdLength: "User ID should be 24 characters",
   userNameExists: "Username is not available!",
   imageRequired: "Image is required",
-  pendingEmailVerification: "Email verification required",
+  pendingEmailVerification: "Please verify your email address.",
   inactiveAccount: "Your account is not active! Kindly contact support!",
   alreadyVerified: "Account is already verified",
-  notAuthorized: "Not authorized for this route!",
+  notAuthorized: "Not authorized",
 }
 
 const texts = {
@@ -37,7 +38,7 @@ const texts = {
   userUpdated: "User updated",
   userDeleted: "User deleted",
   passwordSuccess: "Password updated",
-  loginSuccess: "User login successful",
+  loginSuccess: "Logged in successfully",
   emailVerified: "Email verified successfully",
   passwordResetSent: "Password reset link sent",
   emailVerificationSent: "Email verfication link sent",
@@ -46,5 +47,4 @@ const texts = {
 module.exports = {
   texts,
   errors,
-  validations,
 }
