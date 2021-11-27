@@ -1,8 +1,7 @@
 const router = require("express").Router()
 
-const auth = require("../../../middlewares/auth")
-
 const controller = require("../controllers")
+const auth = require("../../../middlewares/auth")
 
 router.get("/", auth("admin"), controller.getAll)
 router.get("/:userId", auth("admin"), controller.getOne)

@@ -20,21 +20,24 @@ require("./middlewares/pre-route")(app)
 app.get("/ping", (req, res) => res.status(200).send("Hello world!"))
 
 // API routes
-require("./app")(app)
+app.use("/api/v1", require("./app"))
 
 // Error middlewares
 require("./middlewares/error")(app)
 
 // PORT Handling
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || "8080"
 
 // Connecting to Database and listening to server
 connectDB()
   .then(() => {
     const server = app.listen(PORT, () => {
-      console.log(`App listening at port:`, String(PORT).yellow)
+      console.log(
+        `${process.env.NODE_ENV.toUpperCase()} App listening at port:`,
+        PORT.yellow
+      )
     })
-    connectIO(server)
+    // connectIO(server)
   })
   .catch((err) => {
     console.log("[App Error]", err)

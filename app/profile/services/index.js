@@ -12,7 +12,6 @@ class Service {
     }).lean()
 
     if (!user) throw new CustomError(errors.userNotFound, 404)
-
     return user
   }
 
@@ -26,7 +25,6 @@ class Service {
       .lean()
 
     if (!user) throw new CustomError(errors.userNotFound, 404)
-
     return user
   }
 
@@ -52,12 +50,17 @@ class Service {
   }
 
   async deactivateProfile(data) {
-    const user = await Model.findByIdAndUpdate(data.userId, {
-      $set: { status: "inactive" },
-    }).lean()
+    const user = await Model.findByIdAndUpdate(
+      data.userId,
+      {
+        $set: { status: "inactive" },
+      },
+      { new: true }
+    )
+      .select("-password")
+      .lean()
 
     if (!user) throw new CustomError(errors.userNotFound, 404)
-
     return
   }
 }

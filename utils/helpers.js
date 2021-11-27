@@ -1,7 +1,10 @@
+const moment = require("moment")
 const crypto = require("crypto")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const { default: axios } = require("axios")
 
+const { errors } = require("./texts")
 const { CustomError } = require("./customError")
 
 const ENV = process.env
@@ -24,7 +27,7 @@ module.exports = {
 
   // Create a JWT Token
   createJWT: (data) => {
-    return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: 60 * 60 })
+    return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: ENV.JWT_EXPIRY })
   },
 
   // Decode JWT Token
@@ -99,7 +102,7 @@ module.exports = {
   callAxios: async (config) => {
     const response = await axios(config)
 
-    return response.data
+    return { response: response.data, headers: response.headers }
   },
 
   formatDateTime: (date, format = "DD-MM-YYYY hh:mm A") => {

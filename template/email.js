@@ -234,7 +234,7 @@ function emailTemplate({ name, message, url, buttonText }) {
                               class="footer-website"
                               href="www.skupreme.com"
                               ><font color="#393948">template.com</font>
-                </a>
+                            </a>
                           </td>
                         </tr>
                         <tr align="center">

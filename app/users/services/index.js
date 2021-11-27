@@ -4,7 +4,7 @@ const { CustomError } = require("../../../utils/customError")
 const Model = require("../models")
 
 class Service {
-  async getAll(data) {
+  async getAll() {
     const users = await Model.find(
       { role: "user" },
       { password: 0, __v: 0 }
@@ -23,11 +23,20 @@ class Service {
   }
 
   async deleteOne(data) {
-    const user = await Model.findByIdAndDelete(data.userId)
+    const user = await Model.findByIdAndUpdate(
+      data.userId,
+      {
+        $set: {
+          status: "inactive",
+        },
+      },
+      { new: true }
+    )
+      .select("-password")
+      .lean()
 
     if (!user) throw new CustomError(errors.userNotFound, 404)
-
-    return
+    return user
   }
 }
 
