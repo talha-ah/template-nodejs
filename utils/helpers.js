@@ -96,8 +96,8 @@ module.exports = {
 
     if (err.isAxiosError) {
       // console.log("In Parse Error AXIOS".yellow, err)
-      console.log("Headers".red, JSON.stringify(err.headers, null, 2))
-      console.log("Data".red, JSON.stringify(err.response.data, null, 2))
+      console.log("Headers", JSON.stringify(err.headers, null, 2))
+      console.log("Data", JSON.stringify(err.response.data, null, 2))
 
       if (typeof err.response.data === "string") {
         message = err.response.data
@@ -110,7 +110,7 @@ module.exports = {
       status = err.response.status
     }
 
-    console.log(message.red)
+    console.log(message)
 
     return { message, status, name, data }
   },

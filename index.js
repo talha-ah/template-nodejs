@@ -1,4 +1,3 @@
-require("colors")
 require("express-async-errors")
 const dotenv = require("dotenv")
 const express = require("express")
@@ -34,7 +33,7 @@ connectDB()
     const server = app.listen(PORT, () => {
       console.log(
         `${process.env.NODE_ENV.toUpperCase()} App listening at port:`,
-        PORT.yellow
+        PORT 
       )
     })
     connectIO(server)
