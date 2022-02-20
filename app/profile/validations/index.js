@@ -1,7 +1,7 @@
 const Joi = require("joi")
 
 const { errors } = require("../../../utils/texts")
-const { joiError } = require("../../../utils/joiError")
+const { joiError, checkDateOfBirth } = require("../../../utils/helpers")
 
 const schemas = {
   checkUserId: (data) => {
@@ -22,11 +22,11 @@ const schemas = {
         "string.empty": errors.userIdRequired,
         "any.required": errors.userIdRequired,
       }),
-      first_name: Joi.string().required().messages({
+      firstName: Joi.string().required().messages({
         "string.empty": errors.firstNameRequired,
         "any.required": errors.firstNameRequired,
       }),
-      last_name: Joi.string().required().messages({
+      lastName: Joi.string().required().messages({
         "string.empty": errors.lastNameRequired,
         "any.required": errors.lastNameRequired,
       }),
@@ -38,10 +38,17 @@ const schemas = {
           "string.empty": errors.emailRequired,
           "any.required": errors.emailRequired,
         }),
-      image: Joi.string().optional().allow("").messages({
-        "string.empty": errors.imageRequired,
-        "any.required": errors.imageRequired,
-      }),
+      phone: Joi.string().optional().allow("").messages({}),
+      image: Joi.string().optional().allow("").messages({}),
+      gender: Joi.string().optional().allow("").messages({}),
+      dateOfBirth: Joi.string()
+        .allow("")
+        .optional()
+        .custom((value, helper) => {
+          let check = checkDateOfBirth(value)
+          if (!check) return helper.message(errors.eighteenYearsOld)
+          return check
+        }),
     })
 
     return joiError(Validation.validate(data))
@@ -53,9 +60,9 @@ const schemas = {
         "string.empty": errors.userIdRequired,
         "any.required": errors.userIdRequired,
       }),
-      old_password: Joi.string().required().messages({
-        "string.empty": errors.oldPasswordRequired,
-        "any.required": errors.oldPasswordRequired,
+      oldPassword: Joi.string().required().messages({
+        "string.empty": errors.passwordOldRequired,
+        "any.required": errors.passwordOldRequired,
       }),
       password: Joi.string()
         .min(8)
@@ -67,6 +74,21 @@ const schemas = {
           "any.required": errors.passwordRequired,
           "string.pattern.base": errors.passwordCombination,
         }),
+    })
+
+    return joiError(Validation.validate(data))
+  },
+  updateFcmToken: (data) => {
+    const Validation = Joi.object().keys({
+      userId: Joi.string().length(24).required().messages({
+        "string.length": errors.idLength,
+        "string.empty": errors.idRequired,
+        "any.required": errors.idRequired,
+      }),
+      fcmToken: Joi.string().allow("").required().messages({
+        "string.empty": errors.fcmRequired,
+        "any.required": errors.fcmRequired,
+      }),
     })
 
     return joiError(Validation.validate(data))

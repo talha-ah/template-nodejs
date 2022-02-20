@@ -37,7 +37,7 @@ connectDB()
         PORT.yellow
       )
     })
-    // connectIO(server)
+    connectIO(server)
   })
   .catch((err) => {
     console.log("[App Error]", err)

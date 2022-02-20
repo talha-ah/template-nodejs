@@ -1,16 +1,16 @@
 const Joi = require("joi")
 
-const { joiError } = require("../../../utils/joiError")
+const { joiError } = require("../../../utils/helpers")
 const { errors } = require("../../../utils/texts")
 
 const schemas = {
   register: (data) => {
     const Validation = Joi.object().keys({
-      first_name: Joi.string().required().messages({
+      firstName: Joi.string().required().messages({
         "string.empty": errors.firstNameRequired,
         "any.required": errors.firstNameRequired,
       }),
-      last_name: Joi.string().required().messages({
+      lastName: Joi.string().required().messages({
         "string.empty": errors.lastNameRequired,
         "any.required": errors.lastNameRequired,
       }),
@@ -31,14 +31,6 @@ const schemas = {
           "string.empty": errors.passwordRequired,
           "any.required": errors.passwordRequired,
           "string.pattern.base": errors.passwordCombination,
-        }),
-      secret: Joi.string().optional().allow(""),
-      role: Joi.string()
-        .default("user")
-        .valid("user", "admin")
-        .optional()
-        .messages({
-          "any.only": errors.roleOnly,
         }),
     })
 

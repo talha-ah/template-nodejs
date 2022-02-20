@@ -8,4 +8,6 @@ router.put("/", auth(), controller.updateProfile)
 router.patch("/", auth(), controller.updatePassword)
 router.delete("/", auth(), controller.deactivateProfile)
 
+router.put("/fcm", auth(), controller.updateFcmToken)
+
 module.exports = router

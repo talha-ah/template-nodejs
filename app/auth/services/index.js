@@ -6,90 +6,111 @@ const { emailTemplate } = require("../../../template/email")
 const { CustomError } = require("../../../utils/customError")
 const {
   hash,
-  useJWT,
   createJWT,
   compareHash,
+  create4DigitToken,
 } = require("../../../utils/helpers")
 
-const UserModel = require("../../users/models")
+const TokenModel = require("../models/token")
+const UserService = require("../../users/services")
+const OrgService = require("../../organizations/services")
 
 class Service {
+  async checkEmail(data) {
+    let user = await UserService.getOneByEmail(data.email, false)
+
+    let exists = !!user
+
+    return { exists, user }
+  }
+
   async register(data) {
-    if (data.role === "admin" && data.secret !== ENV.ADMIN_SECRET) {
-      throw new CustomError(errors.secretInvalid, 401)
-    }
+    // Check if email exists
+    await UserService.checkIsEmailUnique(data.email)
 
-    let user = await UserModel.findOne({ email: data.email }).lean()
-    if (user) throw new CustomError(errors.emailExists, 400)
+    // Hash password
+    data.password = hash(data.password)
 
-    data.password = hash(data.password, 32)
+    // Create User
+    let user = await UserService.createOne(data)
 
-    if (data.role === "admin") {
-      data.status = "active"
-    }
+    // Create organization
+    await OrgService.createOne({
+      name: data.firstName,
+      email: data.email,
+      users: [{ userId: user._id, role: "admin" }],
+    })
 
-    user = await UserModel.create(data)
+    const token = await this.createToken({
+      email: data.email,
+      type: "verifyEmail",
+    })
 
-    if (data.role !== "admin") {
-      const token = createJWT({ email: data.email })
-
-      const url = `${ENV.CLIENT_URL}/email-verification/${token}`
-
-      // Send email
-      await emailService.send({
-        to: data.email,
-        subject: `${ENV.APP_NAME} - Verify your email`,
-        body: emailTemplate({
-          url: url,
-          name: user.first_name,
-          buttonText: "Verify Email",
-          message: "Verify your email",
-        }),
-      })
-    }
+    // Send email
+    await emailService.send({
+      to: data.email,
+      subject: `Verify your email - ${ENV.APP_NAME}`,
+      body: emailTemplate({
+        name: user.firstName,
+        message: `Verification Code: ${token}`,
+      }),
+    })
 
     return
   }
 
   async login(data) {
-    const user = await UserModel.findOne({ email: data.email }).lean()
+    // Check if user exists
+    let user = await UserService.getOneByEmail(data.email)
 
-    if (!user) throw new CustomError(errors.emailInvalid, 401)
-    if (user.status === "inactive")
-      throw new CustomError(errors.inactiveAccount, 401)
-    if (user.status === "pending")
-      throw new CustomError(errors.pendingEmailVerification, 401)
+    if (user.status === "inactive") {
+      throw new CustomError(errors.accountInactive, 400, {
+        email: errors.accountInactive,
+      })
+    }
 
     const isCorrect = compareHash(data.password, user.password)
-    if (!isCorrect) throw new CustomError(errors.passwordInvalid, 401)
+    if (!isCorrect)
+      throw new CustomError(errors.passwordInvalid, 400, {
+        password: errors.passwordInvalid,
+      })
 
-    const token = createJWT({ id: user._id })
+    delete user.password
+
+    const orgs = await OrgService.getAll({ userId: user._id })
+    user.organization = orgs[0]
+    user.organizations = orgs
+
+    const token = createJWT({ user })
 
     return {
       token: token,
+      user,
     }
   }
 
   async verifyEmailRequest(data) {
-    const user = await UserModel.findOne({ email: data.email }).lean()
+    // Check if user exists
+    let user = await UserService.getOneByEmail(data.email)
 
-    if (!user) throw new CustomError(errors.emailInvalid)
-    if (user.status !== "pending")
-      throw new CustomError(errors.alreadyVerified, 400)
+    if (user.status !== "pending") {
+      throw new CustomError(errors.alreadyVerified, 400, {
+        email: errors.alreadyVerified,
+      })
+    }
 
-    const token = createJWT({ email: data.email })
-
-    const url = `${ENV.CLIENT_URL}/email-verification/${token}`
+    const token = await this.createToken({
+      email: data.email,
+      type: "verifyEmail",
+    })
 
     // Send email
     await emailService.send({
       to: data.email,
-      subject: `${ENV.APP_NAME} - Verify your email`,
+      subject: `Verify your email - ${ENV.APP_NAME}`,
       body: emailTemplate({
-        url: url,
         name: user.firstName,
-        buttonText: "Verify Email",
-        message: "Verify your email",
+        message: `Verification Code: ${token}`,
       }),
     })
 
@@ -97,34 +118,45 @@ class Service {
   }
 
   async verifyEmail(data) {
-    const token = useJWT(data.token)
-    if (!token.email) throw new CustomError(errors.invalidToken, 401)
+    const token = await this.getToken(data)
 
-    await UserModel.updateOne(
-      { email: token.email },
-      { $set: { status: "active" } }
-    )
+    const user = await UserService.updateOneByEmail({
+      email: token.email,
+      status: "active",
+    })
+
+    await this.deleteToken(data)
+
+    // Send email
+    const emailConfig = {
+      to: user.email,
+      subject: `Email verified - ${ENV.APP_NAME}`,
+      body: emailTemplate({
+        name: user.firstName,
+        message: `Your email has been verified. If there is any issue, please contact us at <a href="mailto:${ENV.MAILER_EMAIL}">${ENV.MAILER_EMAIL}</a>`,
+      }),
+    }
+    await emailService.send(emailConfig)
 
     return
   }
 
   async resetPasswordRequest(data) {
-    const user = await UserModel.findOne({ email: data.email }).lean()
-    if (!user) throw new CustomError(errors.emailInvalid, 401)
+    // Check if user exists
+    let user = await UserService.getOneByEmail(data.email)
 
-    const token = createJWT({ email: data.email })
-
-    const url = `${url.CLIENT_URL}/reset-password/${token}`
+    const token = await this.createToken({
+      email: data.email,
+      type: "resetPassword",
+    })
 
     // Send email
     await emailService.send({
       to: data.email,
-      subject: `${ENV.APP_NAME} - Verify your email`,
+      subject: `Change your password - ${ENV.APP_NAME}`,
       body: emailTemplate({
-        url: url,
         name: user.firstName,
-        buttonText: "Reset Password",
-        message: "Reset your password",
+        message: `Verification Code: ${token}`,
       }),
     })
 
@@ -132,15 +164,85 @@ class Service {
   }
 
   async resetPassword(data) {
-    const token = useJWT(data.token)
-    if (!token.email) throw new CustomError(errors.invalidToken, 401)
+    const token = await this.getToken({ token: data.token })
 
-    data.password = hash(data.password, 32)
+    data.password = hash(data.password)
 
-    await UserModel.updateOne(
-      { email: token.email },
-      { $set: { password: data.password } }
+    const user = await UserService.updateOneByEmail({
+      email: token.email,
+      password: data.password,
+    })
+
+    await this.deleteToken(data)
+
+    // Send email
+    const emailConfig = {
+      to: user.email,
+      subject: `Password Updated - ${ENV.APP_NAME}`,
+      body: emailTemplate({
+        name: user.firstName,
+        message: `Your password was updated successfully. If there is any issue, please contact us at <a href="mailto:${ENV.MAILER_EMAIL}">${ENV.MAILER_EMAIL}</a>`,
+      }),
+    }
+    await emailService.send(emailConfig)
+
+    return
+  }
+
+  async checkToken(data) {
+    const token = await this.getToken(data)
+
+    const user = await UserService.getOneByEmail(token.email)
+
+    delete user.password
+
+    return user
+  }
+
+  async getToken(data, throwError = true) {
+    const token = await TokenModel.findOne(data).lean()
+
+    if (throwError && (!token || !token.email)) {
+      throw new CustomError(errors.tokenInvalid, 400, {
+        token: errors.tokenInvalid,
+      })
+    }
+
+    return token
+  }
+
+  async createToken(data) {
+    let token = await this.getToken(data, false)
+
+    // Check if token is unique
+    let isUnique = false
+    while (!isUnique) {
+      token = create4DigitToken()
+      const found = await this.getToken({ token }, false)
+      if (!found) isUnique = true
+    }
+
+    token = await TokenModel.findOneAndUpdate(
+      {
+        email: data.email,
+      },
+      {
+        $set: {
+          token,
+          type: data.type,
+        },
+      },
+      { new: true, upsert: true }
     )
+    if (!token) throw new CustomError(errors.error, 400)
+
+    return token.token
+  }
+
+  async deleteToken(data) {
+    await TokenModel.findOneAndDelete({
+      token: data.token,
+    })
 
     return
   }

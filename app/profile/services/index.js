@@ -2,65 +2,65 @@ const { errors } = require("../../../utils/texts")
 const { CustomError } = require("../../../utils/customError")
 const { hash, compareHash } = require("../../../utils/helpers")
 
-const Model = require("../../users/models")
+const UserService = require("../../users/services")
+const OrgService = require("../../organizations/services")
 
 class Service {
   async fetchProfile(data) {
-    const user = await Model.findById(data.userId, {
-      password: 0,
-      __v: 0,
-    }).lean()
+    const user = await UserService.getOne(data)
 
-    if (!user) throw new CustomError(errors.userNotFound, 404)
+    delete user.password
+
     return user
   }
 
   async updateProfile(data) {
-    const user = await Model.findByIdAndUpdate(
-      data.userId,
-      { $set: data },
-      { new: true }
-    )
-      .select("-password")
-      .lean()
+    let user = await UserService.getOne(data)
+    if (user.email !== data.email) {
+      // Check if email exists
+      await UserService.checkIsEmailUnique(data.email)
+    }
 
-    if (!user) throw new CustomError(errors.userNotFound, 404)
+    user = await UserService.updateOne(data)
+
     return user
   }
 
   async updatePassword(data) {
-    if (data.old_password === data.password)
-      throw new CustomError(errors.samePassword, 400)
+    if (data.oldPassword === data.password)
+      throw new CustomError(errors.samePassword, 400, {
+        password: errors.samePassword,
+      })
 
-    let user = await Model.findById(data.userId)
-    if (!user) throw new CustomError(errors.userNotFound, 404)
+    const user = await UserService.getOne(data)
 
-    let check = compareHash(data.old_password, user.password)
-    if (!check) throw new CustomError(errors.passwordInvalid, 406)
+    const check = compareHash(data.oldPassword, user.password)
+    if (!check)
+      throw new CustomError(errors.passwordOldInvalid, 400, {
+        oldPassword: errors.passwordOldInvalid,
+      })
 
     data.password = hash(data.password)
 
-    user = await user.updateOne({
-      $set: data,
-    })
-
-    if (!user) throw new CustomError(errors.userNotFound, 404)
+    await UserService.updateOne(data)
 
     return
   }
 
   async deactivateProfile(data) {
-    const user = await Model.findByIdAndUpdate(
-      data.userId,
-      {
-        $set: { status: "inactive" },
-      },
-      { new: true }
-    )
-      .select("-password")
-      .lean()
+    await UserService.updateOne({
+      userId: data.userId,
+      status: "inactive",
+    })
 
-    if (!user) throw new CustomError(errors.userNotFound, 404)
+    await OrgService.deactivateUserOrganizations(data)
+
+    return
+  }
+
+  async updateFcmToken(data) {
+    await UserService.updateOne(data)
+
     return
   }
 }

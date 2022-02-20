@@ -1,33 +1,44 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-const userSchema = new Schema(
+const model = new Schema(
   {
-    first_name: {
-      trim: true,
+    firstName: {
       type: String,
       required: true,
     },
-    last_name: {
-      trim: true,
+    lastName: {
       type: String,
     },
     email: {
       trim: true,
       type: String,
+      unique: true,
       required: true,
     },
     password: {
       type: String,
       required: true,
     },
+    phone: {
+      type: String,
+    },
+    gender: {
+      type: String,
+    },
+    dateOfBirth: {
+      type: Date,
+    },
     image: {
+      type: String,
+    },
+    fcm_token: {
       type: String,
     },
     role: {
       trim: true,
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "superadmin"],
       default: "user",
     },
     status: {
@@ -39,4 +50,4 @@ const userSchema = new Schema(
   { versionKey: false, timestamps: true }
 )
 
-module.exports = mongoose.model("user", userSchema)
+module.exports = mongoose.model("user", model)

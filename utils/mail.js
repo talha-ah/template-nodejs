@@ -18,7 +18,7 @@ class EMailService {
   }
 
   async send({ from, to, subject, body }) {
-    from = from || `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`
+    from = from || `${ENV.APP_NAME} <no-reply${ENV.MAILER_EMAIL}>`
 
     if (!body) throw new CustomError("Body is required")
     if (!to) throw new CustomError("Recipient is required")

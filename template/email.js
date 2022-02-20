@@ -1,10 +1,4 @@
 function emailTemplate({ name, message, url, buttonText }) {
-  let nameVol = name
-  if (nameVol) {
-    nameVol = nameVol.split("")
-    nameVol[0] = nameVol[0].toUpperCase()
-    nameVol = nameVol.join("")
-  }
   return `<!DOCTYPE html>
   <html>
     <head>
@@ -194,7 +188,7 @@ function emailTemplate({ name, message, url, buttonText }) {
                       <table role="presentation" class="body-table">
                         <tr>
                           <td style="padding: 0">
-                            <h4 class="body-user">Dear ${nameVol},</h4>
+                            <h4 class="body-user">Dear ${name},</h4>
                           </td>
                         </tr>
                         <tr>
@@ -232,7 +226,7 @@ function emailTemplate({ name, message, url, buttonText }) {
                             <a
                               target="_blank"
                               class="footer-website"
-                              href="www.skupreme.com"
+                              href="www.template.com"
                               ><font color="#393948">template.com</font>
                             </a>
                           </td>

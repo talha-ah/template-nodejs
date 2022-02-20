@@ -1,47 +1,61 @@
 const errors = {
   error: "There was an error!",
-  firstNameRequired: "First name is required",
-  lastNameRequired: "Last name is required",
-  emailRequired: "Email is required",
+  notFound: "Resource not found",
+  notAuthorized: "Not authorized",
+
+  typeDate: "Value must be a Date",
+  typeString: "Value must be a string",
+  typeNumber: "Value must be a number",
+  typeBoolean: "Value must be a boolean",
+
+  tokenInvalid: "Invalid OR expired token",
+  tokenNotFound: "Token not found",
+  tokenRequired: "Token is required",
+
+  accountInactive: "Your account is not active! Kindly contact support!",
+
+  userIdRequired: "User id is required",
+  userIdLength: "User id length must be 24 characters",
+  userNotFound: "User not found. Please check your email and password",
+
+  organizationNotFound: "Organization not found",
+  organizationIdRequired: "Organization id is required",
+  organizationIdLength: "Organization id length must be 24 characters",
+
   emailInvalid: "Email is invalid",
-  emailExists: "Email already exists",
-  emailNotExists: "No user found with that Email!",
-  oldPasswordRequired: "Old password is required",
-  samePassword: "Same password not allowed",
-  passwordInvalid: "Password is incorrect!",
+  emailRequired: "Email is required",
+  emailVerificationPending:
+    "Your email is not verified! Kindly verify your email!",
+
   passwordRequired: "Password is required",
+  passwordInvalid: "Password is incorrect!",
+  passwordOldInvalid: "Old password is incorrect!",
+  passwordSame: "Same passwords not allowed",
+  passwordOldRequired: "Old password is required",
   passwordMin: "Password must have at least 8 characters",
   passwordCombination:
     "Password must contain at least one special character and one number",
-  secretRequired: "Secret is required",
-  secretInvalid: "Invalid secret",
-  roleRequired: "Role is required",
-  roleOnly: "Role must be [user, admin]",
-  tokenRequired: "Token is required",
-  tokenNotFound: "Unauthorized access: Token not found",
-  invalidToken: "Invalid or expired token",
-  userNotFound: "User does not exist",
-  userIdRequired: "User ID is required",
-  userIdLength: "User ID should be 24 characters",
-  userNameExists: "Username is not available!",
+
   imageRequired: "Image is required",
-  pendingEmailVerification: "Please verify your email address.",
-  inactiveAccount: "Your account is not active! Kindly contact support!",
-  alreadyVerified: "Account is already verified",
-  notAuthorized: "Not authorized",
+  fcmRequired: "Fcm token is required",
+  lastNameRequired: "Last name is required",
+  firstNameRequired: "First name is required",
+  eighteenYearsOld: "You must be 18 years old or above",
+
+  invalidInvite: "Invalid OR expired invite",
 }
 
 const texts = {
-  allUsers: "All users",
-  userData: "User data",
-  userCreated: "User created",
-  userUpdated: "User updated",
-  userDeleted: "User deleted",
+  users: "Users",
+  invites: "Invites",
+  success: "Success",
+  profile: "Profile",
+  organizations: "Organizations",
+
   passwordSuccess: "Password updated",
   loginSuccess: "Logged in successfully",
-  emailVerified: "Email verified successfully",
-  passwordResetSent: "Password reset link sent",
-  emailVerificationSent: "Email verfication link sent",
+  passwordResetSent: "Password reset code is sent to your email",
+  emailConfirmationSent: "Email confirmation code is sent to your email",
 }
 
 module.exports = {

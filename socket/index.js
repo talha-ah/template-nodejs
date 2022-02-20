@@ -1,5 +1,5 @@
-var io
-var users = []
+let io
+let users = []
 
 const { CustomError } = require("../utils/customError")
 

@@ -1,16 +1,32 @@
 const { texts } = require("../../../utils/texts")
-const { CustomResponse } = require("../../../utils/response")
+const { CustomResponse } = require("../../../utils/CustomResponse")
 
 const Service = require("../services")
 const Validations = require("../validations")
 
 class Contoller {
+  async checkEmail(req, res) {
+    const data = await Validations.checkEmail(req.params)
+
+    const response = await Service.checkEmail(data)
+
+    res.status(200).json(CustomResponse(texts.userCreated, response))
+  }
+
+  async checkToken(req, res) {
+    const data = await Validations.checkToken(req.params)
+
+    const response = await Service.checkToken(data)
+
+    res.status(200).json(CustomResponse(texts.userCreated, response))
+  }
+
   async register(req, res) {
     const data = await Validations.register(req.body)
 
     const response = await Service.register(data)
 
-    res.status(201).json(CustomResponse(texts.userCreated, response))
+    res.status(200).json(CustomResponse(texts.userCreated, response))
   }
 
   async login(req, res) {
@@ -46,7 +62,7 @@ class Contoller {
   }
 
   async resetPassword(req, res) {
-    const data = await Validations.resetPassword(req.body)
+    const data = await Validations.resetPassword({ ...req.params, ...req.body })
 
     const response = await Service.resetPassword(data)
 

@@ -1,5 +1,5 @@
 const { texts } = require("../../../utils/texts")
-const { CustomResponse } = require("../../../utils/response")
+const { CustomResponse } = require("../../../utils/CustomResponse")
 
 const Service = require("../services")
 const Validations = require("../validations")
@@ -23,7 +23,7 @@ class Contoller {
 
     const response = await Service.updateProfile(data)
 
-    res.status(201).json(CustomResponse(texts.profileUpdated, response))
+    res.status(200).json(CustomResponse(texts.profileUpdated, response))
   }
 
   async updatePassword(req, res) {
@@ -34,7 +34,7 @@ class Contoller {
 
     const response = await Service.updatePassword(data)
 
-    res.status(201).json(CustomResponse(texts.passwordUpdated, response))
+    res.status(200).json(CustomResponse(texts.passwordUpdated, response))
   }
 
   async deactivateProfile(req, res) {
@@ -45,6 +45,17 @@ class Contoller {
     const response = await Service.deactivateProfile(data)
 
     res.status(200).json(CustomResponse(texts.userDeactivated, response))
+  }
+
+  async updateFcmToken(req, res) {
+    const data = await Validations.updateFcmToken({
+      userId: req.userId,
+      ...req.body,
+    })
+
+    const response = await Service.updateFcmToken(data)
+
+    res.status(200).json(CustomResponse(texts.updateFcmToken, response))
   }
 }
 
