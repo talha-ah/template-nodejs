@@ -3,40 +3,53 @@ const Joi = require("joi")
 const { joiError } = require("../../../utils/helpers")
 const { errors } = require("../../../utils/texts")
 
+const userId = {
+  userId: Joi.string().length(24).required().messages({
+    "string.base": errors.typeString,
+    "string.length": errors.userIdLength,
+    "string.empty": errors.userIdRequired,
+    "any.required": errors.userIdRequired,
+  }),
+}
+
+const organizationId = {
+  organizationId: Joi.string().length(24).required().messages({
+    "string.base": errors.typeString,
+    "string.length": errors.organizationIdLength,
+    "string.empty": errors.organizationIdRequired,
+    "any.required": errors.organizationIdRequired,
+  }),
+}
+
+const token = {
+  token: Joi.string().required().messages({
+    "string.base": errors.typeString,
+    "string.empty": errors.tokenRequired,
+    "any.required": errors.tokenRequired,
+  }),
+}
+
 const schemas = {
   getAll: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().length(24).required().messages({
-        "string.length": errors.userIdLength,
-        "string.empty": errors.userIdRequired,
-        "any.required": errors.userIdRequired,
-      }),
-      organizationId: Joi.string().length(24).required().messages({
-        "string.length": errors.organizationIdLength,
-        "string.empty": errors.organizationIdRequired,
-        "any.required": errors.organizationIdRequired,
-      }),
+      ...userId,
+      ...organizationId,
     })
 
     return joiError(Validation.validate(data))
   },
   createOne: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().length(24).required().messages({
-        "string.length": errors.userIdLength,
-        "string.empty": errors.userIdRequired,
-        "any.required": errors.userIdRequired,
-      }),
-      organizationId: Joi.string().length(24).required().messages({
-        "string.length": errors.organizationIdLength,
-        "string.empty": errors.organizationIdRequired,
-        "any.required": errors.organizationIdRequired,
-      }),
+      ...userId,
+      ...organizationId,
       firstName: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.firstNameRequired,
         "any.required": errors.firstNameRequired,
       }),
-      lastName: Joi.string().optional().allow(""),
+      lastName: Joi.string().optional().allow("").messages({
+        "string.base": errors.typeString,
+      }),
       email: Joi.string()
         .email({ tlds: { allow: false } })
         .required()
@@ -51,40 +64,23 @@ const schemas = {
   },
   checkInvite: (data) => {
     const Validation = Joi.object().keys({
-      token: Joi.string().required().messages({
-        "string.empty": errors.tokenRequired,
-        "any.required": errors.tokenRequired,
-      }),
+      ...token,
     })
 
     return joiError(Validation.validate(data))
   },
   invite: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().length(24).required().messages({
-        "string.length": errors.userIdLength,
-        "string.empty": errors.userIdRequired,
-        "any.required": errors.userIdRequired,
-      }),
-      organizationId: Joi.string().length(24).required().messages({
-        "string.length": errors.organizationIdLength,
-        "string.empty": errors.organizationIdRequired,
-        "any.required": errors.organizationIdRequired,
-      }),
-      token: Joi.string().required().messages({
-        "string.empty": errors.tokenRequired,
-        "any.required": errors.tokenRequired,
-      }),
+      ...userId,
+      ...organizationId,
+      ...token,
     })
 
     return joiError(Validation.validate(data))
   },
   acceptInvite: (data) => {
     const Validation = Joi.object().keys({
-      token: Joi.string().required().messages({
-        "string.empty": errors.tokenRequired,
-        "any.required": errors.tokenRequired,
-      }),
+      ...token,
       password: Joi.string()
         .min(8)
         .pattern(/^(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)

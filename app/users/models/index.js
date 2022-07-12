@@ -32,7 +32,13 @@ const model = new Schema(
     image: {
       type: String,
     },
-    fcm_token: {
+    theme: {
+      type: String,
+      enum: ["light", "dark"],
+      required: true,
+      default: "light",
+    },
+    fcmToken: {
       type: String,
     },
     role: {

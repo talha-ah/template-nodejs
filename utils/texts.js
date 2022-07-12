@@ -1,18 +1,28 @@
-const errors = {
+module.exports.errors = {
   error: "There was an error!",
-  notFound: "Resource not found",
   notAuthorized: "Not authorized",
 
-  typeDate: "Value must be a Date",
+  idRequired: "Id is required",
+  idLength: "Id length must be 24 characters",
+
+  typeArray: "Type must be an array",
   typeString: "Value must be a string",
   typeNumber: "Value must be a number",
   typeBoolean: "Value must be a boolean",
 
-  tokenInvalid: "Invalid OR expired token",
-  tokenNotFound: "Token not found",
-  tokenRequired: "Token is required",
+  notFound: "Resource not found",
 
+  accountFound:
+    "This email is already in use. Please use a different email or try logging in.",
   accountInactive: "Your account is not active! Kindly contact support!",
+  accountNotFound: "Account not found. Please sign up before logging in.",
+  accountNotFoundResetPassword:
+    "Account not found. Please verify that you have entered a correct email.",
+
+  tokenInvalid: "Invalid token",
+  tokenRequired: "Token is required",
+  tokenInvalidReset: "Reset code is incorrect",
+  tokenNotFound: "Unauthorized access: Token not found",
 
   userIdRequired: "User id is required",
   userIdLength: "User id length must be 24 characters",
@@ -22,43 +32,49 @@ const errors = {
   organizationIdRequired: "Organization id is required",
   organizationIdLength: "Organization id length must be 24 characters",
 
-  emailInvalid: "Email is invalid",
   emailRequired: "Email is required",
-  emailVerificationPending:
-    "Your email is not verified! Kindly verify your email!",
+  emailInvalid: "Please enter a valid email",
 
   passwordRequired: "Password is required",
-  passwordInvalid: "Password is incorrect!",
-  passwordOldInvalid: "Old password is incorrect!",
-  passwordSame: "Same passwords not allowed",
   passwordOldRequired: "Old password is required",
   passwordMin: "Password must have at least 8 characters",
+  passwordSame: "Old password and new password cannot be the same.",
+  passwordDoNotMatch: "Please enter the same password for both fields",
+  passwordInvalid: "Incorrect password. Please use the correct password.",
   passwordCombination:
     "Password must contain at least one special character and one number",
 
+  keyRequired: "Key is required",
   imageRequired: "Image is required",
+  bucketRequired: "Bucket is required",
   fcmRequired: "Fcm token is required",
   lastNameRequired: "Last name is required",
+  invalidInvite: "Invalid OR expired invite",
   firstNameRequired: "First name is required",
   eighteenYearsOld: "You must be 18 years old or above",
 
-  invalidInvite: "Invalid OR expired invite",
+  statusRequired: "Status is required",
+  invalidStatus: "Status must be active or inactive",
+
+  nameRequired: "Name is required",
+  themeRequired: "Theme is required",
+  themeInvalid: "Theme must be either dark or light",
 }
 
-const texts = {
+module.exports.texts = {
   users: "Users",
-  invites: "Invites",
-  success: "Success",
   profile: "Profile",
+  success: "Success",
+  invites: "Invites",
+  customers: "Customers",
+  categories: "Categories",
   organizations: "Organizations",
+  notifications: "Notifications",
 
   passwordSuccess: "Password updated",
   loginSuccess: "Logged in successfully",
   passwordResetSent: "Password reset code is sent to your email",
-  emailConfirmationSent: "Email confirmation code is sent to your email",
-}
-
-module.exports = {
-  texts,
-  errors,
+  passwordResetSuccess:
+    "Password update is successful! Please use your new passsword to login",
+  userCreated: "Congratulations! Your account has been created.",
 }

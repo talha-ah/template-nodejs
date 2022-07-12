@@ -26,18 +26,17 @@ require("./middlewares/error")(app)
 
 // PORT Handling
 const PORT = process.env.PORT || "8080"
+const ENV = process.env.NODE_ENV.toUpperCase()
 
 // Connecting to Database and listening to server
-connectDB()
-  .then(() => {
-    const server = app.listen(PORT, () => {
-      console.log(
-        `${process.env.NODE_ENV.toUpperCase()} App listening at port:`,
-        PORT 
-      )
-    })
+;(async () => {
+  try {
+    await connectDB()
+    const server = app.listen(PORT, () =>
+      console.log(`${ENV} App started on port:`, PORT)
+    )
     connectIO(server)
-  })
-  .catch((err) => {
+  } catch (err) {
     console.log("[App Error]", err)
-  })
+  }
+})()

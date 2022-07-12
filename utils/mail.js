@@ -17,19 +17,22 @@ class EMailService {
     })
   }
 
-  async send({ from, to, subject, body }) {
+  async send({ from, to, subject, body, attachments = [] }) {
     from = from || `${ENV.APP_NAME} <no-reply${ENV.MAILER_EMAIL}>`
 
     if (!body) throw new CustomError("Body is required")
     if (!to) throw new CustomError("Recipient is required")
     if (!subject) throw new CustomError("Subject is required")
 
-    await this.transporter.sendMail({
+    const mailOptions = {
       from,
       subject,
-      text: body,
-      to: Array.isArray(to) ? to.join() : to,
-    })
+      html: body,
+      attachments,
+      to: Array.isArray(to) ? to.join(",") : to,
+    }
+
+    await this.transporter.sendMail(mailOptions)
 
     return
   }

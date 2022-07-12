@@ -7,13 +7,14 @@ const schemas = {
   register: (data) => {
     const Validation = Joi.object().keys({
       firstName: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.firstNameRequired,
         "any.required": errors.firstNameRequired,
       }),
-      lastName: Joi.string().required().messages({
-        "string.empty": errors.lastNameRequired,
-        "any.required": errors.lastNameRequired,
-      }),
+      lastName: Joi.string()
+        .optional()
+        .allow("")
+        .messages({ "string.base": errors.typeString }),
       email: Joi.string()
         .email({ tlds: { allow: false } })
         .required()
@@ -27,6 +28,7 @@ const schemas = {
         .pattern(/^(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
         .required()
         .messages({
+          "string.base": errors.typeString,
           "string.min": errors.passwordMin,
           "string.empty": errors.passwordRequired,
           "any.required": errors.passwordRequired,
@@ -47,6 +49,7 @@ const schemas = {
           "any.required": errors.emailRequired,
         }),
       password: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.passwordRequired,
         "any.required": errors.passwordRequired,
       }),
@@ -71,6 +74,7 @@ const schemas = {
   checkToken: (data) => {
     const Validation = Joi.object().keys({
       token: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.tokenRequired,
         "any.required": errors.tokenRequired,
       }),
@@ -81,10 +85,12 @@ const schemas = {
   resetPassword: (data) => {
     const Validation = Joi.object().keys({
       token: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.tokenRequired,
         "any.required": errors.tokenRequired,
       }),
       password: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.passwordRequired,
         "any.required": errors.passwordRequired,
       }),

@@ -1,15 +1,15 @@
 const ENV = process.env
 const dayjs = require("dayjs")
 
+const Model = require("../models")
+const UserService = require("../../users/services")
+const OrgService = require("../../organizations/services")
+
 const { errors } = require("../../../utils/texts")
 const { hash } = require("../../../utils/helpers")
 const { emailService } = require("../../../utils/mail")
 const { emailTemplate } = require("../../../template/email")
 const { CustomError } = require("../../../utils/customError")
-
-const Model = require("../models")
-const UserService = require("../../users/services")
-const OrgService = require("../../organizations/services")
 
 class Service {
   async getAll(data) {
@@ -45,10 +45,7 @@ class Service {
       email: data.email,
       organizationId: data.organizationId,
     })
-    if (invite)
-      throw new CustomError(errors.alreadyInvited, 400, {
-        email: errors.alreadyInvited,
-      })
+    if (invite) throw new CustomError(errors.alreadyInvited, 400)
 
     // Create invite
     invite = await Model.create(data)

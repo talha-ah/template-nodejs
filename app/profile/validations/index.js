@@ -3,32 +3,31 @@ const Joi = require("joi")
 const { errors } = require("../../../utils/texts")
 const { joiError, checkDateOfBirth } = require("../../../utils/helpers")
 
+const userId = {
+  userId: Joi.string().length(24).required().messages({
+    "string.base": errors.typeString,
+    "string.length": errors.userIdLength,
+    "string.empty": errors.userIdRequired,
+    "any.required": errors.userIdRequired,
+  }),
+}
+
 const schemas = {
   checkUserId: (data) => {
-    const Validation = Joi.object().keys({
-      userId: Joi.string().required().messages({
-        "string.length": errors.userIdLength,
-        "string.empty": errors.userIdRequired,
-        "any.required": errors.userIdRequired,
-      }),
-    })
+    const Validation = Joi.object().keys(userId)
 
     return joiError(Validation.validate(data))
   },
   updateProfile: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().required().messages({
-        "string.length": errors.userIdLength,
-        "string.empty": errors.userIdRequired,
-        "any.required": errors.userIdRequired,
-      }),
+      ...userId,
       firstName: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.firstNameRequired,
         "any.required": errors.firstNameRequired,
       }),
-      lastName: Joi.string().required().messages({
-        "string.empty": errors.lastNameRequired,
-        "any.required": errors.lastNameRequired,
+      lastName: Joi.string().optional().allow("").messages({
+        "string.base": errors.typeString,
       }),
       email: Joi.string()
         .email({ tlds: { allow: false } })
@@ -38,9 +37,15 @@ const schemas = {
           "string.empty": errors.emailRequired,
           "any.required": errors.emailRequired,
         }),
-      phone: Joi.string().optional().allow("").messages({}),
-      image: Joi.string().optional().allow("").messages({}),
-      gender: Joi.string().optional().allow("").messages({}),
+      phone: Joi.string().optional().allow("").messages({}).messages({
+        "string.base": errors.typeString,
+      }),
+      image: Joi.string().optional().allow("").messages({}).messages({
+        "string.base": errors.typeString,
+      }),
+      gender: Joi.string().optional().allow("").messages({}).messages({
+        "string.base": errors.typeString,
+      }),
       dateOfBirth: Joi.string()
         .allow("")
         .optional()
@@ -55,12 +60,9 @@ const schemas = {
   },
   updatePassword: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().required().messages({
-        "string.length": errors.userIdLength,
-        "string.empty": errors.userIdRequired,
-        "any.required": errors.userIdRequired,
-      }),
+      ...userId,
       oldPassword: Joi.string().required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.passwordOldRequired,
         "any.required": errors.passwordOldRequired,
       }),
@@ -69,6 +71,7 @@ const schemas = {
         .pattern(/^(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
         .required()
         .messages({
+          "string.base": errors.typeString,
           "string.min": errors.passwordMin,
           "string.empty": errors.passwordRequired,
           "any.required": errors.passwordRequired,
@@ -80,14 +83,25 @@ const schemas = {
   },
   updateFcmToken: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().length(24).required().messages({
-        "string.length": errors.idLength,
-        "string.empty": errors.idRequired,
-        "any.required": errors.idRequired,
-      }),
+      ...userId,
       fcmToken: Joi.string().allow("").required().messages({
+        "string.base": errors.typeString,
         "string.empty": errors.fcmRequired,
         "any.required": errors.fcmRequired,
+      }),
+    })
+
+    return joiError(Validation.validate(data))
+  },
+  updateTheme: (data) => {
+    const Validation = Joi.object().keys({
+      ...userId,
+      ...organizationId,
+      theme: Joi.string().valid("light", "dark").required().messages({
+        "any.only": errors.themeInvalid,
+        "string.base": errors.typeString,
+        "string.empty": errors.themeRequired,
+        "any.required": errors.themeRequired,
       }),
     })
 

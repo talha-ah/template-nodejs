@@ -1,18 +1,19 @@
-const express = require("express")
-const morgan = require("morgan")
-const cors = require("cors")
 const hpp = require("hpp")
+const cors = require("cors")
 const path = require("path")
+const morgan = require("morgan")
 const helmet = require("helmet")
 const xss = require("xss-clean")
+const express = require("express")
 const mongoose = require("mongoose")
-
 const mongoSanitize = require("express-mongo-sanitize")
 
 module.exports = (app) => {
   if (process.env.NODE_ENV === "development") {
     mongoose.set("debug", true)
     app.use(morgan("dev"))
+  } else {
+    app.use(morgan("combined"))
   }
 
   app.options("*", cors())

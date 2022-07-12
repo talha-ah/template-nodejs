@@ -11,6 +11,7 @@ function CustomResponse(message, data, success) {
   return {
     message: formatMesaage(message),
     data: data || null,
+    success: success == null ? true : success,
   }
 }
 

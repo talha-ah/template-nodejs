@@ -8,11 +8,11 @@ const model = new Schema(
       type: String,
       required: true,
     },
-    phone: {
-      type: String,
-    },
     email: {
       trim: true,
+      type: String,
+    },
+    phone: {
       type: String,
     },
     logo: {

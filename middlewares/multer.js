@@ -1,26 +1,50 @@
 const multer = require("multer")
 
+const { checkDirectory } = require("../utils/helpers")
 const { CustomError } = require("../utils/customError")
 
-const storage = (field) =>
-  multer.diskStorage({
+const uploader = (folder) => {
+  return multer({
+    storage: storage(folder),
+    fileFilter: fileFilter([
+      "image/png",
+      "image/jpg",
+      "image/jpeg",
+      "application/pdf",
+    ]),
+  })
+}
+
+const storage = (folder) => {
+  return multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, `uploads/${field}`)
+      if (req.body.path) {
+        folder = `${folder.split("/")[0]}/${req.body.path}`
+      }
+
+      checkDirectory(folder)
+      cb(null, folder)
     },
     filename: (req, file, cb) => {
-      cb(null, Date.now() + "-" + file.originalname)
+      let name = Date.now() + "-" + file.originalname
+      if (req.body.name) {
+        name = `${req.body.name}.${file.originalname.split(".")[1]}`
+      }
+
+      cb(null, name)
     },
   })
+}
 
 const fileFilter = (filters) => (req, file, cb) => {
   if (filters.some((item) => item === file.mimetype)) {
     cb(null, true)
   } else {
-    cb(new CustomError("Wrong extension type"), false)
+    cb(new CustomError("Wrong extension type", 400), false)
   }
 }
 
-async function addPathToBody(req, res, next) {
+function addPathToBody(req, res, next) {
   if (req.files) {
     if (!Array.isArray(req.files)) {
       let files = {}
@@ -47,18 +71,8 @@ async function addPathToBody(req, res, next) {
   next()
 }
 
-const uploader = (folder) =>
-  multer({
-    storage: storage(folder),
-    fileFilter: fileFilter([
-      "image/png",
-      "image/jpg",
-      "image/jpeg",
-      "application/pdf",
-    ]),
-  })
-
 module.exports = (folder, field, type = "single") => {
+  folder = `uploads/${folder}`
   return [
     type === "array"
       ? uploader(folder).array(field)
