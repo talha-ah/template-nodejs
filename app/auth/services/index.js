@@ -66,9 +66,20 @@ const deleteToken = async (data) => {
 const loginResponse = async (user) => {
   delete user.password
 
+  user.lastLoginAt = new Date()
+
+  UserService.updateOne({
+    userId: user._id,
+    lastLoginAt: user.lastLoginAt,
+  })
+
   const orgs = await OrgService.getAll({ userId: user._id })
   user.organization = orgs[0]
   user.organizations = orgs
+
+  if (orgs.length < 1) {
+    throw new CustomError(errors.noOrganization, 400)
+  }
 
   const token = createJWT({ user })
 
@@ -134,9 +145,7 @@ module.exports.verifyEmailRequest = async (data) => {
   let user = await UserService.getOneByEmail(data.email)
 
   if (user.status !== "pending") {
-    throw new CustomError(errors.alreadyVerified, 400, {
-      email: errors.alreadyVerified,
-    })
+    throw new CustomError(errors.alreadyVerified, 400)
   }
 
   const token = await createToken({
@@ -173,7 +182,7 @@ module.exports.verifyEmail = async (data) => {
     subject: `Email verified - ${ENV.APP_NAME}`,
     body: emailTemplate({
       name: user.firstName,
-      message: `Your email has been verified. If there is any issue, please contact us at <a href="mailto:${ENV.MAILER_EMAIL}">${ENV.MAILER_EMAIL}</a>`,
+      message: `Your email has been verified. If there is any issue, please contact us at <a href="mailto:${ENV.APP_EMAIL}">${ENV.APP_EMAIL}</a>`,
     }),
   }
   await emailService.send(emailConfig)
@@ -181,7 +190,7 @@ module.exports.verifyEmail = async (data) => {
   return
 }
 
-module.exports.resetPasswordRequest = async (data) => {
+module.exports.recoverPasswordRequest = async (data) => {
   // Check if user exists
   let user = await UserService.getOneByEmail(data.email)
 
@@ -203,7 +212,7 @@ module.exports.resetPasswordRequest = async (data) => {
   return
 }
 
-module.exports.resetPassword = async (data) => {
+module.exports.recoverPassword = async (data) => {
   const token = await getToken({ token: data.token })
 
   data.password = hash(data.password)
@@ -221,7 +230,7 @@ module.exports.resetPassword = async (data) => {
     subject: `Password Updated - ${ENV.APP_NAME}`,
     body: emailTemplate({
       name: user.firstName,
-      message: `Your password was updated successfully. If there is any issue, please contact us at <a href="mailto:${ENV.MAILER_EMAIL}">${ENV.MAILER_EMAIL}</a>`,
+      message: `Your password was updated successfully. If there is any issue, please contact us at <a href="mailto:${ENV.APP_EMAIL}">${ENV.APP_EMAIL}</a>`,
     }),
   }
   await emailService.send(emailConfig)

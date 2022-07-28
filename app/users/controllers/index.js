@@ -5,10 +5,10 @@ const Service = require("../services")
 const Validations = require("../validations")
 
 module.exports.getAll = async (req, res) => {
-  // Superadmin
   // const data = await Validations.getAll({
   //   userId: req.userId,
   //   organizationId: req.organizationId,
+  //   ...req.query,
   // })
 
   const response = await Service.getAll(data)
@@ -17,7 +17,6 @@ module.exports.getAll = async (req, res) => {
 }
 
 module.exports.deleteOne = async (req, res) => {
-  // Superadmin
   // const data = await Validations.getOne({
   //   userId: req.userId,
   //   organizationId: req.organizationId,

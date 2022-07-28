@@ -1,10 +1,19 @@
+const ENV = process.env
+
 const { errors } = require("../../../utils/texts")
 const { CustomError } = require("../../../utils/customError")
 
 const Model = require("../models")
 
-module.exports.getAll = async () => {
-  const users = await Model.find({ role: "user" }).select("-password").lean()
+module.exports.getAll = async (data) => {
+  data.page = +data.page || 1
+  data.limit = +data.limit || +ENV.LIMIT
+
+  const users = await Model.find({ role: "user" })
+    .select("-password")
+    .skip((data.page - 1) * data.limit)
+    .limit(data.limit)
+    .lean()
 
   return users
 }
@@ -75,12 +84,9 @@ module.exports.updateOneByEmail = async (data) => {
   return user
 }
 
-module.exports.checkIsEmailUnique = async (data) => {
-  const user = await Model.findOne({ email: data.email }).select("email").lean()
+module.exports.checkIsEmailUnique = async (email) => {
+  const user = await Model.findOne({ email }).select("email").lean()
 
-  if (user) {
-    throw new CustomError(errors.emailExists, 400)
-  }
-
+  if (user) throw new CustomError(errors.accountFound, 400)
   return
 }

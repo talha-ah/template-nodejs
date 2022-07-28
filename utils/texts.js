@@ -71,6 +71,12 @@ module.exports.texts = {
   organizations: "Organizations",
   notifications: "Notifications",
 
+  fetchProfile: "Profile",
+  profileUpdated: "Profile updated",
+  userDeactivated: "User deactivated",
+  updateFcmToken: "Updated fcm token",
+  passwordUpdated: "Password updated",
+
   passwordSuccess: "Password updated",
   loginSuccess: "Logged in successfully",
   passwordResetSent: "Password reset code is sent to your email",

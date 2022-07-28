@@ -32,14 +32,12 @@ const model = new Schema(
     image: {
       type: String,
     },
-    theme: {
-      type: String,
-      enum: ["light", "dark"],
-      required: true,
-      default: "light",
-    },
     fcmToken: {
       type: String,
+    },
+    lastLoginAt: {
+      type: Date,
+      default: Date.now,
     },
     role: {
       trim: true,

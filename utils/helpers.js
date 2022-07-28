@@ -17,6 +17,12 @@ module.exports = {
     return crypto.randomBytes(bytes).toString("hex").substr(0, bytes)
   },
 
+  randomDate: (start, end) => {
+    return new Date(
+      start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    )
+  },
+
   generateId: (prefix = "", length = 7) => {
     let result = prefix
     for (let i = 0; i < length; i++) {
@@ -146,7 +152,7 @@ module.exports = {
   joiError: ({ error, value }) => {
     if (error) {
       const { details } = error
-      const message = details.map((i) => i.message).join(",")
+      const message = details.map((i) => i.message.replace(/"/g, "")).join(",")
 
       throw new CustomError(message, 405)
     }
@@ -168,21 +174,7 @@ module.exports = {
     return date
   },
 
-  checkBirthDate: (date, old = 18) => {
-    if (!date) return false
-
-    date = date * 1000
-
-    let eighteenYearsDays = dayjs().diff(dayjs().add(-old, "years"), "days")
-    let toNowDays = dayjs().diff(dayjs(date), "days")
-
-    if (toNowDays < eighteenYearsDays) {
-      throw new CustomError(errors.eighteenYearsOld, 406)
-    }
-
-    return true
-  },
-
+  // Call axios
   callAxios: async (config) => {
     const response = await axios(config)
 
@@ -217,6 +209,21 @@ module.exports = {
     if (!date) return ""
 
     return dayjs(date).valueOf()
+  },
+
+  checkBirthDate: (date, old = 18) => {
+    if (!date) return false
+
+    date = date * 1000
+
+    let eighteenYearsDays = dayjs().diff(dayjs().add(-old, "years"), "days")
+    let toNowDays = dayjs().diff(dayjs(date), "days")
+
+    if (toNowDays < eighteenYearsDays) {
+      throw new CustomError(errors.eighteenYearsOld, 406)
+    }
+
+    return true
   },
 
   batchPromises: async (promises, batchSize = 10, fn, pauseProcess) => {

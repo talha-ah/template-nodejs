@@ -36,18 +36,18 @@ module.exports.verifyEmail = async (req, res) => {
   res.status(200).json(CustomResponse(texts.emailVerified, response))
 }
 
-module.exports.resetPasswordRequest = async (req, res) => {
+module.exports.recoverPasswordRequest = async (req, res) => {
   const data = await Validations.checkEmail(req.params)
 
-  const response = await Service.resetPasswordRequest(data)
+  const response = await Service.recoverPasswordRequest(data)
 
   res.status(200).json(CustomResponse(texts.emailVerificationSent, response))
 }
 
-module.exports.resetPassword = async (req, res) => {
-  const data = await Validations.resetPassword({ ...req.params, ...req.body })
+module.exports.recoverPassword = async (req, res) => {
+  const data = await Validations.recoverPassword({ ...req.params, ...req.body })
 
-  const response = await Service.resetPassword(data)
+  const response = await Service.recoverPassword(data)
 
   res.status(200).json(CustomResponse(texts.passwordSuccess, response))
 }

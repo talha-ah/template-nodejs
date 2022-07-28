@@ -9,7 +9,6 @@ class EMailService {
     this.transporter = nodemailer.createTransport({
       host: ENV.MAILER_HOST,
       port: ENV.MAILER_PORT,
-      secure: ENV.SECURE,
       auth: {
         user: ENV.MAILER_USERNAME,
         pass: ENV.MAILER_PASSWORD,
@@ -18,7 +17,7 @@ class EMailService {
   }
 
   async send({ from, to, subject, body, attachments = [] }) {
-    from = from || `${ENV.APP_NAME} <no-reply${ENV.MAILER_EMAIL}>`
+    from = from || `${ENV.APP_NAME} <no-reply${ENV.APP_EMAIL}>`
 
     if (!body) throw new CustomError("Body is required")
     if (!to) throw new CustomError("Recipient is required")

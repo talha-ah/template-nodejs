@@ -22,30 +22,36 @@ const organizationId = {
 }
 
 const schemas = {
-  getAll: (data) => {
+  getUsers: (data) => {
     const Validation = Joi.object().keys({
       ...userId,
       ...organizationId,
-      page: Joi.string().optional().allow("").messages({
-        "string.base": errors.typeString,
-      }),
-      limit: Joi.string().optional().allow("").messages({
-        "string.base": errors.typeString,
-      }),
+      interval: Joi.string()
+        .allow("")
+        .optional()
+        .valid("week", "month", "year")
+        .default("month")
+        .messages({
+          "string.base": errors.typeString,
+          "any.only": errors.invalidInterval,
+        }),
     })
 
     return joiError(Validation.validate(data))
   },
-  getOne: (data) => {
+  getUsersChart: (data) => {
     const Validation = Joi.object().keys({
       ...userId,
       ...organizationId,
-      id: Joi.string().length(24).required().messages({
-        "string.base": errors.typeString,
-        "string.length": errors.userIdLength,
-        "string.empty": errors.userIdRequired,
-        "any.required": errors.userIdRequired,
-      }),
+      interval: Joi.string()
+        .allow("")
+        .optional()
+        .valid("week", "month", "year")
+        .default("month")
+        .messages({
+          "string.base": errors.typeString,
+          "any.only": errors.invalidInterval,
+        }),
     })
 
     return joiError(Validation.validate(data))

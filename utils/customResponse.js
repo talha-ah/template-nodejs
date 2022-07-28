@@ -8,10 +8,24 @@ const { formatMesaage } = require("./helpers")
  */
 
 function CustomResponse(message, data, success) {
+  const rest = {}
+
+  if (data) {
+    rest.totalData = data.totalData
+    rest.totalPages = data.totalPages
+    rest.page = data.page
+    rest.limit = data.limit
+
+    if (data.response) {
+      data = data.response
+    }
+  }
+
   return {
     message: formatMesaage(message),
     data: data || null,
     success: success == null ? true : success,
+    ...rest,
   }
 }
 
