@@ -1,5 +1,5 @@
 const { texts } = require("../../../utils/texts")
-const { CustomResponse } = require("../../../utils/customResponse")
+const { customResponse } = require("../../../utils/customResponse")
 
 const Service = require("../services")
 const Validations = require("../validations")
@@ -12,7 +12,7 @@ module.exports.getAll = async (req, res) => {
 
   const response = await Service.getAll(data)
 
-  res.status(200).json(CustomResponse(texts.organizations, response))
+  res.status(200).json(customResponse(texts.organizations, response))
 }
 
 module.exports.getOne = async (req, res) => {
@@ -23,7 +23,7 @@ module.exports.getOne = async (req, res) => {
 
   const response = await Service.getOne(data)
 
-  res.status(200).json(CustomResponse(texts.organizations, response))
+  res.status(200).json(customResponse(texts.organizations, response))
 }
 
 module.exports.deleteOne = async (req, res) => {
@@ -34,7 +34,7 @@ module.exports.deleteOne = async (req, res) => {
 
   const response = await Service.deleteOne(data)
 
-  res.status(200).json(CustomResponse(texts.organizations, response))
+  res.status(200).json(customResponse(texts.organizations, response))
 }
 
 module.exports.getUsers = async (req, res) => {
@@ -45,7 +45,7 @@ module.exports.getUsers = async (req, res) => {
 
   const response = await Service.getUsers(data)
 
-  res.status(200).json(CustomResponse(texts.users, response))
+  res.status(200).json(customResponse(texts.users, response))
 }
 
 module.exports.removeUser = async (req, res) => {
@@ -57,7 +57,7 @@ module.exports.removeUser = async (req, res) => {
 
   const response = await Service.removeUser(data)
 
-  res.status(200).json(CustomResponse(texts.userDeleted, response))
+  res.status(200).json(customResponse(texts.userDeleted, response))
 }
 
 module.exports.getMetadata = async (req, res) => {
@@ -69,5 +69,5 @@ module.exports.getMetadata = async (req, res) => {
 
   const response = await Service.getMetadata(data)
 
-  res.status(200).json(CustomResponse(texts.organizations, response))
+  res.status(200).json(customResponse(texts.organizations, response))
 }

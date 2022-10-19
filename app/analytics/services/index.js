@@ -1,4 +1,4 @@
-const ObjectId = require("mongodb").ObjectID
+const ObjectId = require("mongodb").ObjectId
 
 const UserModel = require("../../users/models")
 

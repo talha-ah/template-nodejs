@@ -1,4 +1,18 @@
-function emailTemplate({ name, message, url, buttonText }) {
+const { toTitleCase } = require("../utils/helpers")
+
+function emailTemplate({ name, message, url, button }) {
+  const textColor = "#000000"
+  const background = "#ffffff"
+
+  const buttonTextColor = "#ffffff"
+  const buttonBackground = "#000000"
+
+  const headerText = "#ffffff"
+  const headerBackground = "#000000"
+
+  const footerText = "#ffffff"
+  const footerBackground = "#000000"
+
   return `<!DOCTYPE html>
   <html>
     <head>
@@ -23,7 +37,7 @@ function emailTemplate({ name, message, url, buttonText }) {
         body {
           margin: 0;
           padding: 0;
-          color: #303335;
+          color: ${textColor};
           font-family: "Nunito Sans", sans-serif;
         }
         .outer-table {
@@ -32,8 +46,8 @@ function emailTemplate({ name, message, url, buttonText }) {
           padding: 0;
           width: 100%;
           border-spacing: 0;
-          background: #ffffff;
           border-collapse: collapse;
+          background: ${background};
         }
         .table {
           border: 0;
@@ -42,7 +56,7 @@ function emailTemplate({ name, message, url, buttonText }) {
           width: 100%;
           max-width: 500px;
           border-spacing: 0;
-          background: #ffffff;
+          background: ${background};
           border-collapse: collapse;
         }
         .table-body {
@@ -55,12 +69,12 @@ function emailTemplate({ name, message, url, buttonText }) {
           padding: 0;
           width: 100%;
           height: 95px;
-          background-color: #f0f0f0;
+          background-color: ${headerBackground};
         }
         .header-text {
           margin: 0;
-          font-size: 2em;
-          color: #303335;
+          font-size: 1.3em;
+          color: ${headerText};
         }
         .body {
           margin: 0;
@@ -75,41 +89,43 @@ function emailTemplate({ name, message, url, buttonText }) {
         .body-user {
           margin: 0;
           padding: 0;
+          color: ${textColor};
         }
         .body-message {
           margin: 0;
           padding: 0;
           margin: 20px 0;
+          color: ${textColor};
         }
         .body-button-container {
-          margin-top: 40px;
+          margin-top: 30px;
         }
         .body-button {
-          color: #303335;
+          cursor: pointer;
           text-align: center;
           border-radius: 5px;
           text-decoration: none;
-          background-color:   #f0f0f0;
           padding: 12px 20px 12px 20px;
+          color: ${buttonTextColor} !important;
+          background-color: ${buttonBackground};
         }
         .body-button:hover {
-          color: #303335;
+          text-decoration: underline;
         }
         .footer {
           width: 100%;
           padding: 20px 0;
-          background-color: #f0f0f0;
+          background-color: ${footerBackground};
         }
         .footer-table {
           border: 0;
           width: 100%;
           border-spacing: 0;
-          border-collapse: collapse;
+          background-color: ${footerBackground};
         }
         .footer-website {
           margin: 0;
           display: block;
-          color:  #303335;
           font-size: 15px;
           font-weight: 700;
           line-height: 20px;
@@ -119,9 +135,10 @@ function emailTemplate({ name, message, url, buttonText }) {
           letter-spacing: 0em;
           text-decoration: none;
           font-family: Nunito Sans;
+          color: ${footerText} !important;
         }
         .footer-website:hover {
-          color: #303335;
+          text-decoration: underline;
         }
         .footer-description {
           margin: 0;
@@ -132,22 +149,24 @@ function emailTemplate({ name, message, url, buttonText }) {
           text-align: center;
           margin-bottom: 0px;
           letter-spacing: 0em;
+          color: ${footerText};
           text-decoration: none;
           font-family: Nunito Sans;
         }
         .footer-action {
           margin: 0;
-          color:  #303335;
           font-size: 10px;
           font-weight: 400;
           line-height: 16px;
           font-style: normal;
           text-align: center;
           letter-spacing: 0em;
+          text-decoration: none;
           font-family: Nunito Sans;
+          color: ${footerText} !important;
         }
         .footer-action:hover {
-          color: #303335;
+          text-decoration: underline;
         }
         .footer-year {
           margin: 0;
@@ -157,18 +176,21 @@ function emailTemplate({ name, message, url, buttonText }) {
           font-style: normal;
           text-align: center;
           letter-spacing: 0px;
+          color: ${footerText};
+          text-decoration: none;
           font-family: Nunito Sans;
         }
         .footer-logo {
           margin: 0;
           font-size: 16px;
-          color:  #303335;
           font-weight: 400;
           margin-top: 10px;
           line-height: 16px;
           font-style: normal;
           text-align: center;
           letter-spacing: 0px;
+          color: ${footerText};
+          text-decoration: none;
           font-family: Nunito Sans;
         }
       </style>
@@ -188,7 +210,9 @@ function emailTemplate({ name, message, url, buttonText }) {
                       <table role="presentation" class="body-table">
                         <tr>
                           <td style="padding: 0">
-                            <h4 class="body-user">Dear ${name},</h4>
+                            <h4 class="body-user">Dear ${toTitleCase(
+                              name
+                            )},</h4>
                           </td>
                         </tr>
                         <tr>
@@ -197,23 +221,22 @@ function emailTemplate({ name, message, url, buttonText }) {
                           </td>
                         </tr>
                         ${
-                          buttonText &&
-                          `
-                        <tr align="center">
-                          <td style="padding: 0">
-                            <p class="body-button-container">
-                              <a
-                                href="${url}"
-                                target="_blank"
-                                class="body-button"
-                                data-safedirecturl="${url}"
-                              >
-                                <font color="#FFFFFF">${buttonText}</font>
-                              </a>
-                            </p>
-                          </td>
-                        </tr>
-                        `
+                          button && url
+                            ? `<tr align="center">
+                                <td style="padding: 0">
+                                  <div class="body-button-container">
+                                    <a
+                                      href="${url}"
+                                      target="_blank"
+                                      class="body-button"
+                                      data-safedirecturl="${url}"
+                                    >
+                                      ${button}
+                                    </a>
+                                  </div>
+                                </td>
+                              </tr>`
+                            : ""
                         }
                       </table>
                     </td>
@@ -223,12 +246,15 @@ function emailTemplate({ name, message, url, buttonText }) {
                       <table role="presentation" class="footer-table">
                         <tr align="center">
                           <td style="padding: 0">
-                            <a
-                              target="_blank"
-                              class="footer-website"
-                              href="www.template.com"
-                              ><font color="#393948">template.com</font>
-                            </a>
+                            <h5 class="footer-logo">
+                              <a
+                                target="_blank"
+                                class="footer-website"
+                                href="www.template.com"
+                              >
+                                template
+                              </a>
+                            </h5>
                           </td>
                         </tr>
                         <tr align="center">
@@ -246,15 +272,15 @@ function emailTemplate({ name, message, url, buttonText }) {
                                 class="footer-action"
                                 href="https://www.template.com"
                               >
-                                <font color="#393948"> Unsubscribe</font></a
-                              >
+                                Unsubscribe
+                              </a>
                               <span class="footer-action"> | </span>
                               <a
                                 target="_blank"
                                 class="footer-action"
                                 href="https://www.template.com"
                               >
-                                <font color="#393948">Change Preferences</font>
+                                Change Preferences
                               </a>
                             </div>
                           </td>
@@ -262,11 +288,6 @@ function emailTemplate({ name, message, url, buttonText }) {
                         <tr align="center">
                           <td style="padding: 0">
                             <p class="footer-year">© 2021</p>
-                          </td>
-                        </tr>
-                        <tr align="center">
-                          <td style="padding: 0">
-                            <h5 class="footer-logo">template</h5>
                           </td>
                         </tr>
                       </table>

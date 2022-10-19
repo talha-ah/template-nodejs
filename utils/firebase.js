@@ -8,4 +8,4 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 })
 
-module.exports.firebase = admin
+module.exports.firebase = admin.firestore()

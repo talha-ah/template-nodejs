@@ -12,6 +12,8 @@ module.exports.errors = {
 
   notFound: "Resource not found",
 
+  noOrganization: "No organization found",
+  alreadyVerified: "Email already verified",
   accountFound:
     "This email is already in use. Please use a different email or try logging in.",
   accountInactive: "Your account is not active! Kindly contact support!",
@@ -23,6 +25,9 @@ module.exports.errors = {
   tokenRequired: "Token is required",
   tokenInvalidReset: "Reset code is incorrect",
   tokenNotFound: "Unauthorized access: Token not found",
+
+  refreshTokenInvalid: "Refresh token is invalid",
+  refreshTokenRequired: "Refresh token is required",
 
   userIdRequired: "User id is required",
   userIdLength: "User id length must be 24 characters",
@@ -58,7 +63,7 @@ module.exports.errors = {
 
   nameRequired: "Name is required",
   themeRequired: "Theme is required",
-  themeInvalid: "Theme must be either dark or light",
+  themeInvalid: "Theme must be either light, dark, or system",
 }
 
 module.exports.texts = {
@@ -77,6 +82,7 @@ module.exports.texts = {
   updateFcmToken: "Updated fcm token",
   passwordUpdated: "Password updated",
 
+  refreshSuccess: "Refreshed token",
   passwordSuccess: "Password updated",
   loginSuccess: "Logged in successfully",
   passwordResetSent: "Password reset code is sent to your email",

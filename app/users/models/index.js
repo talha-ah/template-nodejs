@@ -26,7 +26,7 @@ const model = new Schema(
     gender: {
       type: String,
     },
-    dateOfBirth: {
+    dob: {
       type: Date,
     },
     image: {
@@ -35,9 +35,15 @@ const model = new Schema(
     fcmToken: {
       type: String,
     },
-    lastLoginAt: {
+    lastLogin: {
       type: Date,
       default: Date.now,
+    },
+    theme: {
+      trim: true,
+      type: String,
+      enum: ["light", "dark", "system"],
+      default: "light",
     },
     role: {
       trim: true,

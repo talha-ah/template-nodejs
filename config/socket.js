@@ -1,14 +1,16 @@
 const IOImport = require("../socket")
-const { log } = require("../utils/helpers")
 
 function connect(server) {
   const io = IOImport.init(server)
 
   io.on("connection", (socket) => {
-    log("Connection Established, Total = ", IOImport.addUser(socket).length)
+    console.log("User connected, Total = ", IOImport.addUser(socket).length)
 
     socket.on("disconnect", () => {
-      log("Connection Demolished, Total = ", IOImport.deleteUser(socket).length)
+      console.log(
+        "User Disconnected, Total = ",
+        IOImport.deleteUser(socket).length
+      )
     })
   })
 }

@@ -1,5 +1,5 @@
 const { texts } = require("../../../utils/texts")
-const { CustomResponse } = require("../../../utils/customResponse")
+const { customResponse } = require("../../../utils/customResponse")
 
 class Contoller {
   async upload(req, res) {
@@ -7,7 +7,7 @@ class Contoller {
       image: req.body.image,
     }
 
-    res.status(200).json(CustomResponse(texts.success, response))
+    res.status(200).json(customResponse(texts.success, response))
   }
 }
 

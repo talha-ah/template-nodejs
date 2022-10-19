@@ -1,5 +1,5 @@
 const { texts } = require("../../../utils/texts")
-const { CustomResponse } = require("../../../utils/customResponse")
+const { customResponse } = require("../../../utils/customResponse")
 
 const Service = require("../services")
 const Validations = require("../validations")
@@ -11,7 +11,7 @@ module.exports.fetchProfile = async (req, res) => {
 
   const response = await Service.fetchProfile(data)
 
-  res.status(200).json(CustomResponse(texts.fetchProfile, response))
+  res.status(200).json(customResponse(texts.fetchProfile, response))
 }
 
 module.exports.updateProfile = async (req, res) => {
@@ -22,7 +22,7 @@ module.exports.updateProfile = async (req, res) => {
 
   const response = await Service.updateProfile(data)
 
-  res.status(200).json(CustomResponse(texts.profileUpdated, response))
+  res.status(200).json(customResponse(texts.profileUpdated, response))
 }
 
 module.exports.updatePassword = async (req, res) => {
@@ -33,7 +33,7 @@ module.exports.updatePassword = async (req, res) => {
 
   const response = await Service.updatePassword(data)
 
-  res.status(200).json(CustomResponse(texts.passwordUpdated, response))
+  res.status(200).json(customResponse(texts.passwordUpdated, response))
 }
 
 module.exports.deactivateProfile = async (req, res) => {
@@ -43,7 +43,7 @@ module.exports.deactivateProfile = async (req, res) => {
 
   const response = await Service.deactivateProfile(data)
 
-  res.status(200).json(CustomResponse(texts.userDeactivated, response))
+  res.status(200).json(customResponse(texts.userDeactivated, response))
 }
 
 module.exports.updateFcmToken = async (req, res) => {
@@ -54,7 +54,7 @@ module.exports.updateFcmToken = async (req, res) => {
 
   const response = await Service.updateFcmToken(data)
 
-  res.status(200).json(CustomResponse(texts.updateFcmToken, response))
+  res.status(200).json(customResponse(texts.updateFcmToken, response))
 }
 
 module.exports.updateTheme = async (req, res) => {
@@ -65,5 +65,5 @@ module.exports.updateTheme = async (req, res) => {
 
   const response = await Service.updateTheme(data)
 
-  res.status(200).json(CustomResponse(texts.updateFcmToken, response))
+  res.status(200).json(customResponse(texts.updateTheme, response))
 }

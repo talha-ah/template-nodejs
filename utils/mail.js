@@ -16,7 +16,7 @@ class EMailService {
     })
   }
 
-  async send({ from, to, subject, body, attachments = [] }) {
+  async send({ to, from, body, subject, messageId, attachments = [] }) {
     from = from || `${ENV.APP_NAME} <no-reply${ENV.APP_EMAIL}>`
 
     if (!body) throw new CustomError("Body is required")
@@ -26,6 +26,7 @@ class EMailService {
     const mailOptions = {
       from,
       subject,
+      messageId,
       html: body,
       attachments,
       to: Array.isArray(to) ? to.join(",") : to,

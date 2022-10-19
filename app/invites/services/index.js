@@ -9,11 +9,12 @@ const { emailTemplate } = require("../../../template/email")
 const { CustomError } = require("../../../utils/customError")
 
 const Model = require("../models")
+const AuthService = require("../../auth/services")
 const UserService = require("../../users/services")
 const OrgService = require("../../organizations/services")
 
-const getInviteMessage = (organizationName) => {
-  return `You have been invited to join ${organizationName} on ${ENV.APP_NAME}. It will expired in 24 hours. Please click the link below to accept the invite.`
+const getInviteMessage = (organizationName, invite) => {
+  return `You have been invited to join ${organizationName} on ${ENV.APP_NAME}. The invite will expire in 24 hours. Please accept this invite by clicking on the button below or copy and paste the following url in your browser:<br /><br /><a target="_blank" href=${process.env.CLIENT_URL}/auth/accept-invite?token=${invite._id}>${process.env.CLIENT_URL}/auth/accept-invite?token=${invite._id}</a>`
 }
 
 module.exports.getAll = async (data) => {
@@ -76,8 +77,8 @@ module.exports.createOne = async (data) => {
     subject: `Invitation email - ${ENV.APP_NAME}`,
     body: emailTemplate({
       name: data.firstName,
-      buttonText: "Accept Invite",
-      message: getInviteMessage(organization.name),
+      button: "Accept Invite",
+      message: getInviteMessage(organization.name, invite),
       url: `${process.env.CLIENT_URL}/auth/accept-invite?token=${invite._id}`,
     }),
   })
@@ -186,6 +187,13 @@ module.exports.acceptInvite = async (data) => {
       firstName: invite.firstName,
     })
 
+    // Create user own organization
+    await OrgService.createOne({
+      name: invite.firstName,
+      email: invite.email,
+      users: [{ userId: user._id, role: "admin" }],
+    })
+
     await OrgService.addUser({
       role: "user",
       userId: user._id,
@@ -195,20 +203,23 @@ module.exports.acceptInvite = async (data) => {
 
   await this.deleteInviteWithoutAuth(data)
 
-  // Send email
-  const emailConfig = {
+  const loginResponse = await AuthService.loginResponse(
+    user,
+    invite.organizationId
+  )
+
+  emailService.send({
     to: user.email,
     subject: `Welcome - ${ENV.APP_NAME}`,
     body: emailTemplate({
-      buttonText: "Login",
+      button: "Login",
       name: invite.firstName,
       url: `${process.env.CLIENT_URL}/auth/login`,
       message: `Welcome to ${ENV.APP_NAME}. You have been added to the ${organization.name}. You can now login to the app.`,
     }),
-  }
-  await emailService.send(emailConfig)
+  })
 
-  return
+  return loginResponse
 }
 
 module.exports.rejectInvite = async (data) => {
@@ -220,16 +231,21 @@ module.exports.rejectInvite = async (data) => {
 module.exports.resendInvite = async (data) => {
   // Check authorization
   await OrgService.isAdmin(data)
+
   const organization = await OrgService.getOne(data)
 
-  const invite = await Model.findById(data.id)
-  if (!invite) throw new CustomError(errors.invalidInvite, 400)
-
-  await invite.update({
-    $set: {
-      updatedAt: new Date(),
+  const invite = await Model.findByIdAndUpdate(
+    data.token,
+    {
+      $set: {
+        updatedAt: new Date(),
+      },
     },
-  })
+    {
+      new: true,
+    }
+  ).lean()
+  if (!invite) throw new CustomError(errors.invalidInvite, 400)
 
   // Send email
   await emailService.send({
@@ -237,8 +253,8 @@ module.exports.resendInvite = async (data) => {
     subject: `Invitation email - ${ENV.APP_NAME}`,
     body: emailTemplate({
       name: invite.firstName,
-      buttonText: "Accept Invite",
-      message: getInviteMessage(organization.name),
+      button: "Accept Invite",
+      message: getInviteMessage(organization.name, invite),
       url: `${process.env.CLIENT_URL}/auth/accept-invite?token=${invite._id}`,
     }),
   })

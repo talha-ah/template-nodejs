@@ -46,7 +46,7 @@ const schemas = {
       gender: Joi.string().optional().allow("").messages({}).messages({
         "string.base": errors.typeString,
       }),
-      dateOfBirth: Joi.string()
+      dob: Joi.string()
         .allow("")
         .optional()
         .custom((value, helper) => {
@@ -96,8 +96,7 @@ const schemas = {
   updateTheme: (data) => {
     const Validation = Joi.object().keys({
       ...userId,
-      ...organizationId,
-      theme: Joi.string().valid("light", "dark").required().messages({
+      theme: Joi.string().valid("light", "dark", "system").required().messages({
         "any.only": errors.themeInvalid,
         "string.base": errors.typeString,
         "string.empty": errors.themeRequired,

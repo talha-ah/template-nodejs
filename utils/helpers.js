@@ -82,7 +82,7 @@ module.exports = {
     return (Math.floor(Math.random() * 10000) + 10000).toString().substring(1)
   },
 
-  titleCase: (str) => {
+  toTitleCase: (str) => {
     if (str) {
       str = str.charAt(0).toUpperCase() + str.slice(1)
     }
@@ -103,9 +103,6 @@ module.exports = {
 
     return name
   },
-
-  // Helper for console.log
-  log: (value) => console.log(`${value}`, value),
 
   // Format a string (Make first letter of the string capital)
   formatMesaage: (str) => {
@@ -178,7 +175,7 @@ module.exports = {
   callAxios: async (config) => {
     const response = await axios(config)
 
-    return { data: response.data, headers: response.headers }
+    return response
   },
 
   formatDateTime: (date, format = "DD-MM-YYYY hh:mm A") => {

@@ -32,7 +32,7 @@ module.exports.createOne = async (data) => {
   const user = await Model.create(data)
 
   if (!user) throw new CustomError(errors.error, 400)
-  return user
+  return user.toObject()
 }
 
 module.exports.updateOne = async (data) => {

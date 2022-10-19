@@ -10,6 +10,6 @@ router.delete("/reject/:token", controller.rejectInvite)
 router.get("/", auth(), controller.getAll)
 router.post("/", auth(), controller.createOne)
 router.delete("/:token", auth(), controller.deleteOne)
-router.post("/resend/:id", auth(), controller.resendInvite)
+router.post("/resend/:token", auth(), controller.resendInvite)
 
 module.exports = router

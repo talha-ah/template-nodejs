@@ -34,6 +34,12 @@ const schemas = {
     const Validation = Joi.object().keys({
       ...userId,
       ...organizationId,
+      page: Joi.string().optional().allow("").messages({
+        "string.base": errors.typeString,
+      }),
+      limit: Joi.string().optional().allow("").messages({
+        "string.base": errors.typeString,
+      }),
     })
 
     return joiError(Validation.validate(data))

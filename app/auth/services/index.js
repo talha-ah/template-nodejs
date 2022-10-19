@@ -1,4 +1,5 @@
 const ENV = process.env
+const ObjectId = require("mongodb").ObjectId
 
 const TokenModel = require("../models/token")
 const UserService = require("../../users/services")
@@ -8,43 +9,25 @@ const { errors } = require("../../../utils/texts")
 const { emailService } = require("../../../utils/mail")
 const { emailTemplate } = require("../../../template/email")
 const { CustomError } = require("../../../utils/customError")
-const {
-  hash,
-  createJWT,
-  compareHash,
-  create4DigitToken,
-} = require("../../../utils/helpers")
+const { hash, createJWT, compareHash } = require("../../../utils/helpers")
 
 const getToken = async (data, throwError = true) => {
-  const token = await TokenModel.findOne(data).lean()
+  const token = await TokenModel.findById(data.token).lean()
 
   if (throwError && (!token || !token.email)) {
-    throw new CustomError(errors.tokenInvalid, 400, {
-      token: errors.tokenInvalid,
-    })
+    throw new CustomError(errors.tokenInvalid, 400)
   }
 
   return token
 }
 
 const createToken = async (data) => {
-  let token = await getToken(data, false)
-
-  // Check if token is unique
-  let isUnique = false
-  while (!isUnique) {
-    token = create4DigitToken()
-    const found = await getToken({ token }, false)
-    if (!found) isUnique = true
-  }
-
-  token = await TokenModel.findOneAndUpdate(
+  const token = await TokenModel.findOneAndUpdate(
     {
       email: data.email,
     },
     {
       $set: {
-        token,
         type: data.type,
       },
     },
@@ -52,7 +35,24 @@ const createToken = async (data) => {
   )
   if (!token) throw new CustomError(errors.error, 400)
 
-  return token.token
+  return token
+}
+
+const createRefreshToken = async (data) => {
+  const token = await TokenModel.findOneAndUpdate(
+    {
+      type: "refresh-token",
+      email: data.user.email,
+      organizationId: data.user.organization._id,
+    },
+    {
+      $set: {},
+    },
+    { new: true, upsert: true }
+  ).lean()
+  if (!token) throw new CustomError(errors.error, 400)
+
+  return String(token._id)
 }
 
 const deleteToken = async (data) => {
@@ -63,28 +63,39 @@ const deleteToken = async (data) => {
   return
 }
 
-const loginResponse = async (user) => {
+module.exports.loginResponse = async (user, orgId) => {
   delete user.password
 
-  user.lastLoginAt = new Date()
+  user.lastLogin = new Date()
 
   UserService.updateOne({
     userId: user._id,
-    lastLoginAt: user.lastLoginAt,
+    lastLogin: user.lastLogin,
   })
 
-  const orgs = await OrgService.getAll({ userId: user._id })
-  user.organization = orgs[0]
-  user.organizations = orgs
-
-  if (orgs.length < 1) {
+  const organizations = await OrgService.getAll({ userId: user._id })
+  if (organizations.length < 1) {
     throw new CustomError(errors.noOrganization, 400)
   }
 
-  const token = createJWT({ user })
+  user.organizations = organizations
+
+  if (orgId) {
+    user.organization = organizations.find(
+      (org) => String(org._id) === String(orgId)
+    )
+    if (!user.organization) user.organization = organizations[0]
+  } else {
+    user.organization = organizations[0]
+  }
+
+  const accessToken = createJWT({ user })
+
+  const refreshToken = await createRefreshToken({ user })
 
   return {
-    token: token,
+    access_token: accessToken,
+    refresh_token: refreshToken,
     user,
   }
 }
@@ -102,7 +113,30 @@ module.exports.login = async (data) => {
     throw new CustomError(errors.passwordInvalid, 400)
   }
 
-  return loginResponse(user)
+  const response = await this.loginResponse(user)
+
+  return response
+}
+
+module.exports.refreshToken = async (data) => {
+  const token = await TokenModel.findOne({
+    _id: ObjectId(data.refresh_token),
+    type: "refresh-token",
+  }).lean()
+  if (!token) {
+    throw new CustomError(errors.tokenInvalid, 400)
+  }
+
+  // Check if user exists
+  let user = await UserService.getOneByEmail(token.email)
+
+  if (user.status === "inactive") {
+    throw new CustomError(errors.accountInactive, 400)
+  }
+
+  const response = await this.loginResponse(user, token.organizationId)
+
+  return response
 }
 
 module.exports.register = async (data) => {
@@ -124,20 +158,24 @@ module.exports.register = async (data) => {
 
   const token = await createToken({
     email: data.email,
-    type: "verifyEmail",
+    type: "verify-email",
   })
 
   // Send email
-  await emailService.send({
+  emailService.send({
     to: data.email,
     subject: `Verify your email - ${ENV.APP_NAME}`,
     body: emailTemplate({
       name: user.firstName,
-      message: `Verification Code: ${token}`,
+      button: "Verify Email",
+      url: `${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}`,
+      message: `Thanks for signing up! Please verify your email address by clicking on the following button or copy and paste the following url in your browser:<br /><br /><a target="_blank" href=${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}>${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}</a>`,
     }),
   })
 
-  return loginResponse(user)
+  const response = await this.loginResponse(user)
+
+  return response
 }
 
 module.exports.verifyEmailRequest = async (data) => {
@@ -150,7 +188,7 @@ module.exports.verifyEmailRequest = async (data) => {
 
   const token = await createToken({
     email: data.email,
-    type: "verifyEmail",
+    type: "verify-email",
   })
 
   // Send email
@@ -159,7 +197,9 @@ module.exports.verifyEmailRequest = async (data) => {
     subject: `Verify your email - ${ENV.APP_NAME}`,
     body: emailTemplate({
       name: user.firstName,
-      message: `Verification Code: ${token}`,
+      button: "Verify Email",
+      url: `${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}`,
+      message: `Thanks for signing up! Please verify your email address by clicking on the following button or copy and paste the following url in your browser:<br /><br /><a target="_blank" href=${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}>${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}</a>`,
     }),
   })
 
@@ -177,35 +217,38 @@ module.exports.verifyEmail = async (data) => {
   await deleteToken(data)
 
   // Send email
-  const emailConfig = {
+  emailService.send({
     to: user.email,
     subject: `Email verified - ${ENV.APP_NAME}`,
     body: emailTemplate({
+      button: "Sign in",
       name: user.firstName,
-      message: `Your email has been verified. If there is any issue, please contact us at <a href="mailto:${ENV.APP_EMAIL}">${ENV.APP_EMAIL}</a>`,
+      url: `${ENV.CLIENT_URL}/auth/login`,
+      message: `Your email has been verified. You can sign in to your account by clicking on the following button or copy and paste the following url in your browser:<br /><br /><a target="_blank" href=${ENV.CLIENT_URL}/auth/login>${ENV.CLIENT_URL}/auth/login</a>`,
     }),
-  }
-  await emailService.send(emailConfig)
+  })
 
   return
 }
 
-module.exports.recoverPasswordRequest = async (data) => {
+module.exports.forgotPassword = async (data) => {
   // Check if user exists
   let user = await UserService.getOneByEmail(data.email)
 
   const token = await createToken({
     email: data.email,
-    type: "resetPassword",
+    type: "recover-password",
   })
 
   // Send email
   await emailService.send({
     to: data.email,
-    subject: `Change your password - ${ENV.APP_NAME}`,
+    subject: `Recover your password - ${ENV.APP_NAME}`,
     body: emailTemplate({
       name: user.firstName,
-      message: `Verification Code: ${token}`,
+      button: "Reset Password",
+      url: `${ENV.CLIENT_URL}/auth/recover-password?token=${token._id}`,
+      message: `Please click on the following button or copy and paste the following url in your browser to reset your password:<br /><br /><a target="_blank" href=${ENV.CLIENT_URL}/auth/recover-password?token=${token._id}>${ENV.CLIENT_URL}/auth/recover-password?token=${token._id}</a>`,
     }),
   })
 
@@ -213,7 +256,7 @@ module.exports.recoverPasswordRequest = async (data) => {
 }
 
 module.exports.recoverPassword = async (data) => {
-  const token = await getToken({ token: data.token })
+  const token = await getToken(data)
 
   data.password = hash(data.password)
 
@@ -225,15 +268,16 @@ module.exports.recoverPassword = async (data) => {
   await deleteToken(data)
 
   // Send email
-  const emailConfig = {
+  emailService.send({
     to: user.email,
     subject: `Password Updated - ${ENV.APP_NAME}`,
     body: emailTemplate({
+      button: "Sign in",
       name: user.firstName,
-      message: `Your password was updated successfully. If there is any issue, please contact us at <a href="mailto:${ENV.APP_EMAIL}">${ENV.APP_EMAIL}</a>`,
+      url: `${ENV.CLIENT_URL}/auth/login`,
+      message: `Your password has been updated successfully. If this wasn't you or is there any issue, please contact us at <a href="mailto:${ENV.APP_EMAIL}">${ENV.APP_EMAIL}</a>`,
     }),
-  }
-  await emailService.send(emailConfig)
+  })
 
   return
 }

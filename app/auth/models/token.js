@@ -3,20 +3,18 @@ const Schema = mongoose.Schema
 
 const model = new Schema(
   {
-    token: {
-      type: String,
-      unique: true,
-      required: true,
-    },
     email: {
       type: String,
       required: true,
     },
+    organizationId: {
+      type: String,
+    },
     type: {
       type: String,
       required: true,
-      default: "verifyEmail",
-      enum: ["resetPassword", "verifyEmail"],
+      default: "refresh-token",
+      enum: ["refresh-token", "recover-password", "verify-email"],
     },
   },
   { versionKey: false, timestamps: true }

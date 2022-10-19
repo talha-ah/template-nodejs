@@ -8,21 +8,7 @@ module.exports = {
       "notifications",
       "upload",
     ],
-    admin: [
-      "profile",
-      "services",
-      "jobs",
-      "notifications",
-      "users",
-      "organizations",
-    ],
-    superadmin: [
-      "profile",
-      "services",
-      "jobs",
-      "notifications",
-      "users",
-      "organizations",
-    ],
+    admin: ["profile", "notifications", "organizations"],
+    superadmin: ["users", "profile", "notifications", "organizations"],
   },
 }

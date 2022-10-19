@@ -3,6 +3,31 @@ const Joi = require("joi")
 const { joiError } = require("../../../utils/helpers")
 const { errors } = require("../../../utils/texts")
 
+const email = {
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required()
+    .messages({
+      "string.email": errors.emailInvalid,
+      "string.empty": errors.emailRequired,
+      "any.required": errors.emailRequired,
+    }),
+}
+const token = {
+  token: Joi.string().required().messages({
+    "string.base": errors.typeString,
+    "string.empty": errors.tokenRequired,
+    "any.required": errors.tokenRequired,
+  }),
+}
+const password = {
+  password: Joi.string().required().messages({
+    "string.base": errors.typeString,
+    "string.empty": errors.passwordRequired,
+    "any.required": errors.passwordRequired,
+  }),
+}
+
 const schemas = {
   register: (data) => {
     const Validation = Joi.object().keys({
@@ -15,14 +40,10 @@ const schemas = {
         .optional()
         .allow("")
         .messages({ "string.base": errors.typeString }),
-      email: Joi.string()
-        .email({ tlds: { allow: false } })
-        .required()
-        .messages({
-          "string.email": errors.emailInvalid,
-          "string.empty": errors.emailRequired,
-          "any.required": errors.emailRequired,
-        }),
+      ...email,
+      phone: Joi.string().optional().allow("").messages({
+        "string.base": errors.typeString,
+      }),
       password: Joi.string()
         .min(8)
         .pattern(/^(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
@@ -40,60 +61,42 @@ const schemas = {
   },
   login: (data) => {
     const Validation = Joi.object().keys({
-      email: Joi.string()
-        .email({ tlds: { allow: false } })
-        .required()
-        .messages({
-          "string.email": errors.emailInvalid,
-          "string.empty": errors.emailRequired,
-          "any.required": errors.emailRequired,
-        }),
-      password: Joi.string().required().messages({
+      ...email,
+      ...password,
+    })
+
+    return joiError(Validation.validate(data))
+  },
+  refreshToken: (data) => {
+    const Validation = Joi.object().keys({
+      refresh_token: Joi.string().required().messages({
         "string.base": errors.typeString,
-        "string.empty": errors.passwordRequired,
-        "any.required": errors.passwordRequired,
+        "string.empty": errors.refreshTokenRequired,
+        "any.required": errors.refreshTokenRequired,
       }),
     })
 
     return joiError(Validation.validate(data))
   },
   checkEmail: (data) => {
-    const Validation = Joi.object().keys({
-      email: Joi.string()
-        .email({ tlds: { allow: false } })
-        .required()
-        .messages({
-          "string.empty": errors.emailRequired,
-          "string.email": errors.emailInvalid,
-          "any.required": errors.emailRequired,
-        }),
-    })
+    const Validation = Joi.object().keys(email)
 
     return joiError(Validation.validate(data))
   },
   checkToken: (data) => {
-    const Validation = Joi.object().keys({
-      token: Joi.string().required().messages({
-        "string.base": errors.typeString,
-        "string.empty": errors.tokenRequired,
-        "any.required": errors.tokenRequired,
-      }),
-    })
+    const Validation = Joi.object().keys(token)
 
     return joiError(Validation.validate(data))
   },
-  resetPassword: (data) => {
+  forgotPassword: (data) => {
+    const Validation = Joi.object().keys(email)
+
+    return joiError(Validation.validate(data))
+  },
+  recoverPassword: (data) => {
     const Validation = Joi.object().keys({
-      token: Joi.string().required().messages({
-        "string.base": errors.typeString,
-        "string.empty": errors.tokenRequired,
-        "any.required": errors.tokenRequired,
-      }),
-      password: Joi.string().required().messages({
-        "string.base": errors.typeString,
-        "string.empty": errors.passwordRequired,
-        "any.required": errors.passwordRequired,
-      }),
+      ...token,
+      ...password,
     })
 
     return joiError(Validation.validate(data))
