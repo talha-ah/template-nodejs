@@ -26,13 +26,13 @@ module.exports.getOne = async (req, res) => {
   res.status(200).json(customResponse(texts.organizations, response))
 }
 
-module.exports.deleteOne = async (req, res) => {
+module.exports.deactivateOne = async (req, res) => {
   const data = await Validations.checkOne({
     userId: req.userId,
     ...req.params,
   })
 
-  const response = await Service.deleteOne(data)
+  const response = await Service.deactivateOne(data)
 
   res.status(200).json(customResponse(texts.organizations, response))
 }
@@ -45,7 +45,7 @@ module.exports.getUsers = async (req, res) => {
 
   const response = await Service.getUsers(data)
 
-  res.status(200).json(customResponse(texts.users, response))
+  res.status(200).json(customResponse(texts.organizations, response))
 }
 
 module.exports.removeUser = async (req, res) => {
@@ -57,7 +57,7 @@ module.exports.removeUser = async (req, res) => {
 
   const response = await Service.removeUser(data)
 
-  res.status(200).json(customResponse(texts.userDeleted, response))
+  res.status(200).json(customResponse(texts.orgUserRemove, response))
 }
 
 module.exports.getMetadata = async (req, res) => {

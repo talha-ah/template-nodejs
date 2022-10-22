@@ -11,10 +11,12 @@ module.exports.customResponse = (message, data, success) => {
   const rest = {}
 
   if (data) {
-    rest.totalData = data.totalData
-    rest.totalPages = data.totalPages
-    rest.page = data.page
-    rest.limit = data.limit
+    rest.pagination = {
+      totalData: data.totalData,
+      totalPages: data.totalPages,
+      page: data.page,
+      limit: data.limit,
+    }
 
     if (data.response) {
       data = data.response
@@ -22,9 +24,9 @@ module.exports.customResponse = (message, data, success) => {
   }
 
   return {
+    success: success == null ? true : success,
     message: formatMesaage(message),
     data: data || null,
-    success: success == null ? true : success,
     ...rest,
   }
 }

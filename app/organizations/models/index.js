@@ -30,6 +30,13 @@ const model = new Schema(
           enum: ["admin", "user"],
           default: "user",
         },
+        owner: {
+          type: Boolean,
+          default: false,
+        },
+        permissions: {
+          type: Object,
+        },
       },
     ],
     status: {

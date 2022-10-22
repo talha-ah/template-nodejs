@@ -21,9 +21,6 @@ module.exports.getAll = async (data) => {
   data.page = +data.page || 1
   data.limit = +data.limit || +ENV.LIMIT
 
-  // Check authorization
-  await OrgService.isAdmin(data)
-
   const query = {
     organizationId: data.organizationId,
   }
@@ -45,8 +42,6 @@ module.exports.getAll = async (data) => {
 }
 
 module.exports.createOne = async (data) => {
-  // Check authorization
-  await OrgService.isAdmin(data)
   let organization = await OrgService.getOne(data)
 
   // Check if user already exists
@@ -87,9 +82,6 @@ module.exports.createOne = async (data) => {
 }
 
 module.exports.deleteOne = async (data) => {
-  // Check authorization
-  await OrgService.isAdmin(data)
-
   await Model.findByIdAndDelete(data.token)
 
   return
@@ -191,7 +183,7 @@ module.exports.acceptInvite = async (data) => {
     await OrgService.createOne({
       name: invite.firstName,
       email: invite.email,
-      users: [{ userId: user._id, role: "admin" }],
+      users: [{ userId: user._id, role: "admin", owner: true }],
     })
 
     await OrgService.addUser({
@@ -229,9 +221,6 @@ module.exports.rejectInvite = async (data) => {
 }
 
 module.exports.resendInvite = async (data) => {
-  // Check authorization
-  await OrgService.isAdmin(data)
-
   const organization = await OrgService.getOne(data)
 
   const invite = await Model.findByIdAndUpdate(

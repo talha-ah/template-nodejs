@@ -10,7 +10,7 @@ const mongoSanitize = require("express-mongo-sanitize")
 
 module.exports = (app) => {
   if (process.env.NODE_ENV === "development") {
-    mongoose.set("debug", true)
+    // mongoose.set("debug", true)
     app.use(morgan("dev"))
   } else {
     app.use(morgan("combined"))

@@ -42,6 +42,7 @@ module.exports.errors = {
 
   passwordRequired: "Password is required",
   passwordOldRequired: "Old password is required",
+  passwordOldInvalid: "Old password is incorrect",
   passwordMin: "Password must have at least 8 characters",
   passwordSame: "Old password and new password cannot be the same.",
   passwordDoNotMatch: "Please enter the same password for both fields",
@@ -77,10 +78,13 @@ module.exports.texts = {
   notifications: "Notifications",
 
   fetchProfile: "Profile",
+  updateTheme: "Theme Updated",
   profileUpdated: "Profile updated",
   userDeactivated: "User deactivated",
-  updateFcmToken: "Updated fcm token",
+  updateFcmToken: "FCM Token updated",
   passwordUpdated: "Password updated",
+
+  orgUserRemove: "User removed from organization",
 
   refreshSuccess: "Refreshed token",
   passwordSuccess: "Password updated",

@@ -28,7 +28,7 @@ module.exports.updateProfile = async (data) => {
 
 module.exports.updatePassword = async (data) => {
   if (data.oldPassword === data.password)
-    throw new CustomError(errors.samePassword, 400)
+    throw new CustomError(errors.passwordSame, 400)
 
   const user = await UserService.getOne(data)
 

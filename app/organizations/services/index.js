@@ -1,24 +1,14 @@
 const { errors } = require("../../../utils/texts")
+const { PERMISSIONS } = require("../../../utils/metadata")
 const { CustomError } = require("../../../utils/customError")
 
 const Model = require("../models")
 const MetadataModel = require("../models/metadata")
 
-module.exports.isAdmin = async (data) => {
-  const org = await Model.findOne({
-    _id: data.organizationId,
-    "users.userId": data.userId,
-  }).lean()
+const formatPermissions = (role) => {
+  const permissions = PERMISSIONS[role].modules
 
-  if (!org) throw new CustomError(errors.organizationNotFound, 400)
-
-  let role = org.users.find(
-    (user) => String(user.userId) === String(data.userId)
-  ).role
-
-  if (role !== "admin") throw new CustomError(errors.notAuthorized, 400)
-
-  return true
+  return permissions
 }
 
 module.exports.getAll = async (data) => {
@@ -58,7 +48,7 @@ module.exports.createOne = async (data) => {
   return org
 }
 
-module.exports.deleteOne = async (data) => {
+module.exports.deactivateOne = async (data) => {
   const org = await Model.findByIdAndUpdate(
     data.organizationId,
     {
@@ -76,13 +66,14 @@ module.exports.deleteOne = async (data) => {
 }
 
 module.exports.getUsers = async (data) => {
-  await this.isAdmin(data)
-
   const org = await Model.findOne({
     _id: data.organizationId,
     "users.userId": data.userId,
   })
-    .populate("users.userId")
+    .populate({
+      path: "users.userId",
+      select: "firstName lastName email",
+    })
     .select("users")
     .lean()
 
@@ -100,6 +91,8 @@ module.exports.getUsers = async (data) => {
 }
 
 module.exports.addUser = async (data) => {
+  const permissions = formatPermissions(data.role)
+
   const org = await Model.findByIdAndUpdate(
     data.organizationId,
     {
@@ -107,6 +100,7 @@ module.exports.addUser = async (data) => {
         users: {
           role: data.role,
           userId: data.userId,
+          permissions,
         },
       },
     },
@@ -121,8 +115,6 @@ module.exports.addUser = async (data) => {
 }
 
 module.exports.removeUser = async (data) => {
-  await this.isAdmin(data)
-
   await Model.findByIdAndUpdate(
     data.organizationId,
     {
@@ -155,6 +147,52 @@ module.exports.getUserRole = async (data) => {
   return role
 }
 
+module.exports.getUserPermissions = async (data) => {
+  const org = await Model.findOne({
+    _id: data.organizationId,
+    "users.userId": data.userId,
+  }).lean()
+
+  if (!org) throw new CustomError(errors.organizationNotFound, 400)
+
+  let orgUser = org.users.find(
+    (user) => String(user.userId) === String(data.userId)
+  )
+
+  if (!orgUser) throw new CustomError(errors.userNotFound, 400)
+
+  if (!orgUser.permissions) {
+    orgUser.permissions = formatPermissions(orgUser.role)
+
+    // Update user permissions
+    await this.updateUserPermissions({
+      userId: data.userId,
+      permissions: orgUser.permissions,
+      organizationId: data.organizationId,
+    })
+  }
+
+  return orgUser.permissions
+}
+
+module.exports.updateUserPermissions = async (data) => {
+  const org = await Model.updateOne(
+    {
+      _id: data.organizationId,
+      "users.userId": data.userId,
+    },
+    {
+      $set: {
+        "users.$.permissions": data.permissions,
+      },
+    }
+  ).lean()
+
+  if (!org) throw new CustomError(errors.organizationNotFound, 400)
+
+  return
+}
+
 module.exports.checkUserExists = async (data) => {
   const user = await Model.findOne({
     _id: data.organizationId,
@@ -184,12 +222,12 @@ module.exports.deactivateUserOrganizations = async (data) => {
 }
 
 module.exports.getMetadata = async (data) => {
-  let metadata = await MetadataModel.findOne({
+  let response = await MetadataModel.findOne({
     organizationId: data.organizationId,
   }).lean()
 
-  if (!metadata) {
-    metadata = await MetadataModel.create({
+  if (!response) {
+    response = await MetadataModel.create({
       organizationId: data.organizationId,
     })
   }

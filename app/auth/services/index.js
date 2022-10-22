@@ -89,6 +89,11 @@ module.exports.loginResponse = async (user, orgId) => {
     user.organization = organizations[0]
   }
 
+  user.permissions = await OrgService.getUserPermissions({
+    userId: user._id,
+    organizationId: user.organization._id,
+  })
+
   const accessToken = createJWT({ user })
 
   const refreshToken = await createRefreshToken({ user })
@@ -153,7 +158,7 @@ module.exports.register = async (data) => {
   await OrgService.createOne({
     name: data.firstName,
     email: data.email,
-    users: [{ userId: user._id, role: "admin" }],
+    users: [{ userId: user._id, role: "admin", owner: true }],
   })
 
   const token = await createToken({

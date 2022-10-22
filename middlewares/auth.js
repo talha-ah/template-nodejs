@@ -1,6 +1,6 @@
 const { errors } = require("../utils/texts")
 const { useJWT } = require("../utils/helpers")
-const { permissions } = require("../utils/metadata")
+const { PERMISSIONS } = require("../utils/metadata")
 const { CustomError } = require("../utils/customError")
 
 /**
@@ -34,23 +34,29 @@ function auth(role = "user") {
     req.userId = String(user._id)
     req.organizationId = String(user.organization._id)
 
-    const userRole = user.role
     const orgRole = user.organization.role
 
-    if (userRole === "superadmin") {
+    if (user.role === "superadmin") {
       next()
     } else {
-      // handle route access based on role provided (if any) in the route
-      if (role === "admin" && orgRole !== "admin") {
-        throw new CustomError(errors.notAuthorized, 401)
+      const method = req.method.toUpperCase()
+      let baseUrl = req.baseUrl.replace("/api/v1/", "") + req.path
+
+      if (baseUrl.endsWith("/")) {
+        baseUrl = baseUrl.slice(0, -1)
       }
 
-      const baseUrl = req.baseUrl.replace("/api/v1/", "")
+      const generalAllowed = PERMISSIONS.generalRoutes.some((route) =>
+        route.regex.test(baseUrl)
+      )
+      const privateAllowed = PERMISSIONS[orgRole].routes.some(
+        (route) =>
+          (route.methods[0] === "ALL" || route.methods.includes(method)) &&
+          route.regex.test(baseUrl)
+      )
 
-      if (orgRole === "user" && req.method !== "GET") {
-        if (permissions.user.indexOf(baseUrl) === -1) {
-          throw new CustomError(errors.notAuthorized, 401)
-        }
+      if (!generalAllowed && !privateAllowed) {
+        throw new CustomError(errors.notAuthorized, 401)
       }
 
       next()
