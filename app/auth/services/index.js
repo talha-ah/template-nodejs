@@ -105,6 +105,16 @@ module.exports.loginResponse = async (user, orgId) => {
   }
 }
 
+module.exports.authProfile = async (data) => {
+  const user = await UserService.getOne({
+    userId: data.userId,
+  })
+
+  const response = await this.loginResponse(user, data.organizationId)
+
+  return response
+}
+
 module.exports.login = async (data) => {
   // Check if user exists
   let user = await UserService.getOneByEmail(data.email)

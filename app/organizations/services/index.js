@@ -72,7 +72,7 @@ module.exports.getUsers = async (data) => {
   })
     .populate({
       path: "users.userId",
-      select: "firstName lastName email",
+      select: "firstName lastName email phone lastLogin",
     })
     .select("users")
     .lean()

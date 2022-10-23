@@ -61,6 +61,7 @@ module.exports.errors = {
 
   statusRequired: "Status is required",
   invalidStatus: "Status must be active or inactive",
+  invalidInterval: "Interval must be either week, month, or year",
 
   nameRequired: "Name is required",
   themeRequired: "Theme is required",

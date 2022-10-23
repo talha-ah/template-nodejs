@@ -3,11 +3,11 @@ module.exports.PERMISSIONS = {
     routes: [
       {
         methods: ["GET", "POST"],
-        regex: /organizations$/,
+        regex: /organizations$|metadata$/,
       },
     ],
     modules: {
-      dashboard: {
+      Dashboard: {
         description: "Dashboard",
         options: ["overview"],
         settings: [],
@@ -30,7 +30,7 @@ module.exports.PERMISSIONS = {
       },
     ],
     modules: {
-      dashboard: {
+      Dashboard: {
         description: "Dashboard",
         options: ["overview", "users"],
         settings: [],
@@ -62,7 +62,7 @@ module.exports.PERMISSIONS = {
       },
     ],
     modules: {
-      dashboard: {
+      Dashboard: {
         description: "Dashboard",
         options: ["overview", "users"],
         settings: [],

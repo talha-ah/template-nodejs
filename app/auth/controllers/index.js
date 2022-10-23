@@ -4,6 +4,17 @@ const { customResponse } = require("../../../utils/customResponse")
 const Service = require("../services")
 const Validations = require("../validations")
 
+module.exports.authProfile = async (req, res) => {
+  const data = await Validations.authProfile({
+    userId: req.userId,
+    organizationId: req.organizationId,
+  })
+
+  const response = await Service.authProfile(data)
+
+  res.status(200).json(customResponse(texts.loginSuccess, response))
+}
+
 module.exports.login = async (req, res) => {
   const data = await Validations.login(req.body)
 
