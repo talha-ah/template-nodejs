@@ -6,9 +6,17 @@ const ENV = process.env
 
 class EMailService {
   constructor() {
+    // this.transporter = nodemailer.createTransport({
+    //   host: ENV.MAILER_HOST,
+    //   port: ENV.MAILER_PORT,
+    //   auth: {
+    //     user: ENV.MAILER_USERNAME,
+    //     pass: ENV.MAILER_PASSWORD,
+    //   },
+    // })
+
     this.transporter = nodemailer.createTransport({
-      host: ENV.MAILER_HOST,
-      port: ENV.MAILER_PORT,
+      service: ENV.MAILER_SERVICE,
       auth: {
         user: ENV.MAILER_USERNAME,
         pass: ENV.MAILER_PASSWORD,

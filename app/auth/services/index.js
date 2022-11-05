@@ -56,9 +56,7 @@ const createRefreshToken = async (data) => {
 }
 
 const deleteToken = async (data) => {
-  await TokenModel.findOneAndDelete({
-    token: data.token,
-  })
+  await TokenModel.findByIdAndDelete(data.token)
 
   return
 }
@@ -162,7 +160,7 @@ module.exports.register = async (data) => {
   data.password = hash(data.password)
 
   // Create User
-  let user = await UserService.createOne(data)
+  const user = await UserService.createOne(data)
 
   // Create organization
   await OrgService.createOne({
@@ -214,7 +212,7 @@ module.exports.verifyEmailRequest = async (data) => {
       name: user.firstName,
       button: "Verify Email",
       url: `${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}`,
-      message: `Thanks for signing up! Please verify your email address by clicking on the following button or copy and paste the following url in your browser:<br /><br /><a target="_blank" href=${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}>${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}</a>`,
+      message: `Please verify your email address by clicking on the following button or copy and paste the following url in your browser:<br /><br /><a target="_blank" href=${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}>${ENV.CLIENT_URL}/auth/verify-email?token=${token._id}</a>`,
     }),
   })
 
@@ -285,7 +283,7 @@ module.exports.recoverPassword = async (data) => {
   // Send email
   emailService.send({
     to: user.email,
-    subject: `Password Updated - ${ENV.APP_NAME}`,
+    subject: `Reset Password - ${ENV.APP_NAME}`,
     body: emailTemplate({
       button: "Sign in",
       name: user.firstName,
