@@ -1,5 +1,5 @@
 const { parseError } = require("../utils/helpers")
-const { customResponse } = require("../utils/customResponse")
+const { customResponse } = require("../utils/response")
 
 // Possible error names
 const errorNames = [
@@ -13,21 +13,23 @@ const errorNames = [
 
 module.exports = (app) => {
   app.use("*", (req, res) => {
-    res.status(400).send(customResponse("Invalid request", null, 400))
+    res.status(400).send(customResponse("Invalid request", null, false))
   })
 
   app.use((error, req, res, next) => {
-    const { name, message, status } = parseError(error)
+    const { message, status, name, data } = parseError(error)
 
     if (name == "CustomError") {
-      res.status(error.status).send(customResponse(message, null, error.status))
+      res.status(error.status).send(customResponse(message, data, false))
     } else if (name == "MongoError" && status == 11000) {
       const field = Object.entries(keyValue)[0][0] // Catch duplicate key field error
-      res.status(400).send(customResponse(`${field} already exists`, null, 400))
+      res
+        .status(400)
+        .send(customResponse(`${field} already exists`, null, false))
     } else if (errorNames.includes(name)) {
-      res.status(400).send(customResponse(message, null, 400))
+      res.status(400).send(customResponse(message, null, false))
     } else {
-      res.status(500).send(customResponse(message, null, 500))
+      res.status(500).send(customResponse(message, null, false))
     }
   })
 

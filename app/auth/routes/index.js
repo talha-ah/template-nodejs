@@ -4,6 +4,7 @@ const controller = require("../controllers")
 const auth = require("../../../middlewares/auth")
 
 router.get("/profile", auth(), controller.authProfile)
+router.get("/organization/:orgId", auth(), controller.switchOrganization)
 
 router.post("/login", controller.login)
 router.post("/register", controller.register)

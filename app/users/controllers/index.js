@@ -1,5 +1,5 @@
 const { texts } = require("../../../utils/texts")
-const { customResponse } = require("../../../utils/customResponse")
+const { customResponse } = require("../../../utils/response")
 
 const Service = require("../services")
 const Validations = require("../validations")

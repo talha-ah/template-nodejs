@@ -7,7 +7,7 @@ module.exports.PERMISSIONS = {
       },
     ],
     modules: {
-      Dashboard: {
+      dashboard: {
         description: "Dashboard",
         options: ["overview"],
         settings: [],
@@ -30,7 +30,7 @@ module.exports.PERMISSIONS = {
       },
     ],
     modules: {
-      Dashboard: {
+      dashboard: {
         description: "Dashboard",
         options: ["overview", "users"],
         settings: [],
@@ -62,7 +62,7 @@ module.exports.PERMISSIONS = {
       },
     ],
     modules: {
-      Dashboard: {
+      dashboard: {
         description: "Dashboard",
         options: ["overview", "users"],
         settings: [],

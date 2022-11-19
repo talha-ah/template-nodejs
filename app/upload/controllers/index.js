@@ -1,5 +1,5 @@
 const { texts } = require("../../../utils/texts")
-const { customResponse } = require("../../../utils/customResponse")
+const { customResponse } = require("../../../utils/response")
 
 class Contoller {
   async upload(req, res) {

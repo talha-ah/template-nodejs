@@ -1,5 +1,5 @@
 const { texts } = require("../../../utils/texts")
-const { customResponse } = require("../../../utils/customResponse")
+const { customResponse } = require("../../../utils/response")
 
 const Service = require("../services")
 const Validations = require("../validations")
@@ -13,6 +13,17 @@ module.exports.authProfile = async (req, res) => {
   const response = await Service.authProfile(data)
 
   res.status(200).json(customResponse(texts.loginSuccess, response))
+}
+
+module.exports.switchOrganization = async (req, res) => {
+  const data = await Validations.switchOrganization({
+    userId: req.userId,
+    organizationId: req.params.orgId,
+  })
+
+  const response = await Service.switchOrganization(data)
+
+  res.status(200).json(customResponse(texts.success, response))
 }
 
 module.exports.login = async (req, res) => {

@@ -156,21 +156,6 @@ module.exports = {
     return value
   },
 
-  checkDateOfBirth: (date, old = 18) => {
-    if (!date) return false
-
-    date = date * 1000
-
-    let eighteenYearsDays = dayjs().subtract(old, "year")
-    let toNowDays = dayjs(date)
-
-    if (toNowDays.isAfter(eighteenYearsDays)) {
-      return null
-    }
-
-    return date
-  },
-
   // Call axios
   callAxios: async (config) => {
     const response = await axios(config)
@@ -221,6 +206,21 @@ module.exports = {
     }
 
     return true
+  },
+
+  checkDateOfBirth: (date, old = 18) => {
+    if (!date) return false
+
+    date = date * 1000
+
+    let eighteenYearsDays = dayjs().subtract(old, "year")
+    let toNowDays = dayjs(date)
+
+    if (toNowDays.isAfter(eighteenYearsDays)) {
+      return null
+    }
+
+    return date
   },
 
   batchPromises: async (promises, batchSize = 10, fn, pauseProcess) => {
