@@ -77,16 +77,17 @@ module.exports.loginResponse = async (user, orgId) => {
   }
 
   user.organizations = organizations
+  user.organization = organizations[0]
 
   if (orgId) {
-    user.organization = organizations.find(
+    const organization = organizations.find(
       (org) => String(org._id) === String(orgId)
     )
-    if (!user.organization) user.organization = organizations[0]
-  } else {
-    user.organization = organizations[0]
+    if (organization) user.organization = organization
   }
 
+  user.role = user.organization.role
+  user.owner = user.organization.owner
   user.permissions = await OrgService.getUserPermissions({
     userId: user._id,
     organizationId: user.organization._id,
@@ -115,7 +116,7 @@ module.exports.authProfile = async (data) => {
 
 module.exports.login = async (data) => {
   // Check if user exists
-  let user = await UserService.getOneByEmail(data.email)
+  const user = await UserService.getOneByEmail(data.email)
 
   if (user.status === "inactive") {
     throw new CustomError(errors.accountInactive, 400)
@@ -141,7 +142,7 @@ module.exports.refreshToken = async (data) => {
   }
 
   // Check if user exists
-  let user = await UserService.getOneByEmail(token.email)
+  const user = await UserService.getOneByEmail(token.email)
 
   if (user.status === "inactive") {
     throw new CustomError(errors.accountInactive, 400)
@@ -193,7 +194,7 @@ module.exports.register = async (data) => {
 
 module.exports.verifyEmailRequest = async (data) => {
   // Check if user exists
-  let user = await UserService.getOneByEmail(data.email)
+  const user = await UserService.getOneByEmail(data.email)
 
   if (user.status !== "pending") {
     throw new CustomError(errors.alreadyVerified, 400)
@@ -246,7 +247,7 @@ module.exports.verifyEmail = async (data) => {
 
 module.exports.forgotPassword = async (data) => {
   // Check if user exists
-  let user = await UserService.getOneByEmail(data.email)
+  const user = await UserService.getOneByEmail(data.email)
 
   const token = await createToken({
     email: data.email,
@@ -296,9 +297,9 @@ module.exports.recoverPassword = async (data) => {
 }
 
 module.exports.checkEmail = async (data) => {
-  let user = await UserService.getOneByEmail(data.email, false)
+  const user = await UserService.getOneByEmail(data.email, false)
 
-  let exists = !!user
+  const exists = !!user
 
   return { exists, user }
 }

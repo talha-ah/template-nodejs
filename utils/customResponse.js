@@ -7,7 +7,7 @@ const { formatMesaage } = require("./helpers")
  * @param {boolean} success Status of the request
  */
 
-module.exports.customResponse = (message, data, success) => {
+module.exports.customResponse = (message, data, status) => {
   const rest = {}
 
   if (data) {
@@ -24,7 +24,7 @@ module.exports.customResponse = (message, data, success) => {
   }
 
   return {
-    success: success == null ? true : success,
+    status: status,
     message: formatMesaage(message),
     data: data || null,
     ...rest,
