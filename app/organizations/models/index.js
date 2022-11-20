@@ -24,6 +24,7 @@ const model = new Schema(
         userId: {
           type: Schema.Types.ObjectId,
           ref: "user",
+          required: true,
         },
         role: {
           type: String,

@@ -1,3 +1,5 @@
+const ObjectId = require("mongodb").ObjectId
+
 const { errors } = require("../../../utils/texts")
 const { PERMISSIONS } = require("../../../utils/metadata")
 const { CustomError } = require("../../../utils/customError")
@@ -43,6 +45,23 @@ module.exports.getOne = async (data) => {
 
 module.exports.createOne = async (data) => {
   const org = await Model.create(data)
+
+  if (!org) throw new CustomError(errors.error, 400)
+  return org
+}
+
+module.exports.updateOne = async (data) => {
+  const org = await Model.findByIdAndUpdate(
+    data.organizationId,
+    {
+      $set: data,
+    },
+    {
+      new: true,
+    }
+  )
+    .select("-users")
+    .lean()
 
   if (!org) throw new CustomError(errors.error, 400)
   return org
@@ -112,6 +131,50 @@ module.exports.addUser = async (data) => {
     .lean()
 
   return org
+}
+
+module.exports.updateUser = async (data) => {
+  await Model.findOneAndUpdate(
+    {
+      _id: ObjectId(data.organizationId),
+      "users.userId": ObjectId(data.id),
+    },
+    {
+      $set: {
+        "users.$.role": data.role,
+      },
+    },
+    {
+      new: true,
+    }
+  )
+    .select("_id")
+    .lean()
+
+  return
+}
+
+module.exports.updateUsers = async (data) => {
+  await Model.bulkWrite(
+    data.users.map((user) => {
+      return {
+        updateOne: {
+          filter: {
+            _id: ObjectId(data.organizationId),
+            "users.userId": ObjectId(user.id),
+          },
+          update: {
+            $set: {
+              "users.$.role": user.role,
+            },
+          },
+          new: true,
+        },
+      }
+    })
+  )
+
+  return
 }
 
 module.exports.removeUser = async (data) => {

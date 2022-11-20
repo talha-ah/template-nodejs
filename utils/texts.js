@@ -1,25 +1,17 @@
 module.exports.errors = {
   error: "There was an error!",
+  notFound: "Resource not found",
   notAuthorized: "Not authorized",
 
   idRequired: "Id is required",
   idLength: "Id length must be 24 characters",
 
+  typeArray: "Value must be a Array",
   typeArray: "Type must be an array",
   typeString: "Value must be a string",
   typeNumber: "Value must be a number",
+  typeObject: "Value must be an object",
   typeBoolean: "Value must be a boolean",
-
-  notFound: "Resource not found",
-
-  noOrganization: "No organization found",
-  alreadyVerified: "Email already verified",
-  accountFound:
-    "This email is already in use. Please use a different email or try logging in.",
-  accountInactive: "Your account is not active! Kindly contact support!",
-  accountNotFound: "Account not found. Please sign up before logging in.",
-  accountNotFoundResetPassword:
-    "Account not found. Please verify that you have entered a correct email.",
 
   tokenInvalid: "Invalid token",
   tokenRequired: "Token is required",
@@ -29,13 +21,16 @@ module.exports.errors = {
   refreshTokenInvalid: "Refresh token is invalid",
   refreshTokenRequired: "Refresh token is required",
 
-  userIdRequired: "User id is required",
-  userIdLength: "User id length must be 24 characters",
-  userNotFound: "User not found. Please check your email and password",
+  alreadyVerified: "Email already verified",
+  accountInactive: "Your account is not active! Kindly contact support!",
+  accountNotFound: "Account not found. Please sign up before logging in.",
+  accountFound:
+    "This email is already in use. Please use a different email or try logging in.",
+  accountNotFoundResetPassword:
+    "Account not found. Please verify that you have entered a correct email.",
 
-  organizationNotFound: "Organization not found",
-  organizationIdRequired: "Organization id is required",
-  organizationIdLength: "Organization id length must be 24 characters",
+  roleInvalid: "Role is invalid",
+  roleRequired: "Role is required",
 
   emailRequired: "Email is required",
   emailInvalid: "Please enter a valid email",
@@ -50,22 +45,40 @@ module.exports.errors = {
   passwordCombination:
     "Password must contain at least one special character and one number",
 
+  usersRequired: "Users are required",
+  userIdRequired: "User id is required",
+  userIdLength: "User id length must be 24 characters",
+  userNotFound: "User not found. Please check your email and password",
+
+  noOrganization: "No organization found",
+  organizationNotFound: "Organization not found",
+  organizationIdRequired: "Organization id is required",
+  organizationNameRequired: "Organization name is required",
+  organizationIdLength: "Organization id length must be 24 characters",
+
+  cityRequired: "City is required",
+  stateRequired: "State is required",
+  countryRequired: "Country is required",
+  zipCodeRequired: "Zip code is required",
+  addressOneRequired: "Address one is required",
+  addressTwoRequired: "Address two is required",
+  addressThreeRequired: "Address three is required",
+
+  themeRequired: "Theme is required",
+  themeInvalid: "Theme must be either light, dark, or system",
+
   keyRequired: "Key is required",
+  nameRequired: "Name is required",
   imageRequired: "Image is required",
   bucketRequired: "Bucket is required",
   fcmRequired: "Fcm token is required",
+  statusRequired: "Status is required",
   lastNameRequired: "Last name is required",
   invalidInvite: "Invalid OR expired invite",
   firstNameRequired: "First name is required",
-  eighteenYearsOld: "You must be 18 years old or above",
-
-  statusRequired: "Status is required",
   invalidStatus: "Status must be active or inactive",
+  eighteenYearsOld: "You must be 18 years old or above",
   invalidInterval: "Interval must be either week, month, or year",
-
-  nameRequired: "Name is required",
-  themeRequired: "Theme is required",
-  themeInvalid: "Theme must be either light, dark, or system",
 }
 
 module.exports.texts = {
