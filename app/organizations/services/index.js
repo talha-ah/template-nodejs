@@ -134,6 +134,8 @@ module.exports.addUser = async (data) => {
 }
 
 module.exports.updateUser = async (data) => {
+  const permissions = formatPermissions(data.role)
+
   await Model.findOneAndUpdate(
     {
       _id: ObjectId(data.organizationId),
@@ -142,6 +144,7 @@ module.exports.updateUser = async (data) => {
     {
       $set: {
         "users.$.role": data.role,
+        "users.$.permissions": permissions,
       },
     },
     {
@@ -157,6 +160,8 @@ module.exports.updateUser = async (data) => {
 module.exports.updateUsers = async (data) => {
   await Model.bulkWrite(
     data.users.map((user) => {
+      const permissions = formatPermissions(user.role)
+
       return {
         updateOne: {
           filter: {
@@ -166,6 +171,7 @@ module.exports.updateUsers = async (data) => {
           update: {
             $set: {
               "users.$.role": user.role,
+              "users.$.permissions": permissions,
             },
           },
           new: true,
