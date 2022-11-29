@@ -22,8 +22,8 @@ module.exports = (app) => {
   app.use(helmet())
   app.use(xss())
   app.use(hpp())
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: false }))
+  app.use(express.json()) // for parsing application/json
+  app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded (Note: multer is used for parsing multipart/form-data)
   app.use("/uploads", express.static(path.join(__dirname, "../uploads")))
   return app
 }
