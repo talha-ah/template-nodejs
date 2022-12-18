@@ -177,7 +177,14 @@ module.exports.register = async (data) => {
   await OrgService.createOne({
     name: data.firstName,
     email: data.email,
-    users: [{ userId: user._id, role: "admin", owner: true }],
+    users: [
+      {
+        owner: true,
+        role: "admin",
+        userId: user._id,
+        permissions: OrgService.formatPermissions("admin"),
+      },
+    ],
   })
 
   const token = await createToken({

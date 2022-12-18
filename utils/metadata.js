@@ -5,11 +5,15 @@ module.exports.PERMISSIONS = {
         methods: ["GET", "POST"],
         regex: /organizations$|metadata$/,
       },
+      {
+        methods: ["GET", "POST"],
+        regex: /wallet/,
+      },
     ],
     modules: {
-      dashboard: {
+      Dashboard: {
         description: "Dashboard",
-        options: ["overview"],
+        options: [],
         settings: [],
       },
     },
@@ -28,16 +32,15 @@ module.exports.PERMISSIONS = {
         methods: ["ALL"],
         regex: /invites/,
       },
+      {
+        methods: ["ALL"],
+        regex: /wallet/,
+      },
     ],
     modules: {
-      dashboard: {
+      Dashboard: {
         description: "Dashboard",
         options: ["overview", "users"],
-        settings: [],
-      },
-      users: {
-        description: "Users",
-        options: ["users"],
         settings: [],
       },
     },
@@ -62,19 +65,9 @@ module.exports.PERMISSIONS = {
       },
     ],
     modules: {
-      dashboard: {
+      Dashboard: {
         description: "Dashboard",
-        options: ["overview", "users"],
-        settings: [],
-      },
-      users: {
-        description: "Users",
-        options: ["users"],
-        settings: [],
-      },
-      organizations: {
-        description: "Organizations",
-        options: ["overview", "organizations"],
+        options: ["overview", "users", "organizations"],
         settings: [],
       },
     },

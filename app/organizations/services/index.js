@@ -7,12 +7,6 @@ const { CustomError } = require("../../../utils/customError")
 const Model = require("../models")
 const MetadataModel = require("../models/metadata")
 
-const formatPermissions = (role) => {
-  const permissions = PERMISSIONS[role].modules
-
-  return permissions
-}
-
 const shouldUpdatePermissions = (permissions, userPermissions) => {
   let needUpdate = false
 
@@ -21,6 +15,12 @@ const shouldUpdatePermissions = (permissions, userPermissions) => {
   })
 
   return needUpdate
+}
+
+module.exports.formatPermissions = (role) => {
+  const permissions = PERMISSIONS[role].modules
+
+  return permissions
 }
 
 module.exports.getAll = async (data) => {
@@ -122,7 +122,7 @@ module.exports.getUsers = async (data) => {
 }
 
 module.exports.addUser = async (data) => {
-  const permissions = formatPermissions(data.role)
+  const permissions = this.formatPermissions(data.role)
 
   const org = await Model.findByIdAndUpdate(
     data.organizationId,
@@ -146,7 +146,7 @@ module.exports.addUser = async (data) => {
 }
 
 module.exports.updateUser = async (data) => {
-  const permissions = formatPermissions(data.role)
+  const permissions = this.formatPermissions(data.role)
 
   await Model.findOneAndUpdate(
     {
@@ -172,7 +172,7 @@ module.exports.updateUser = async (data) => {
 module.exports.updateUsers = async (data) => {
   await Model.bulkWrite(
     data.users.map((user) => {
-      const permissions = formatPermissions(user.role)
+      const permissions = this.formatPermissions(user.role)
 
       return {
         updateOne: {
@@ -242,7 +242,7 @@ module.exports.getUserPermissions = async (data) => {
 
   if (!orgUser) throw new CustomError(errors.userNotFound, 400)
 
-  const permissions = formatPermissions(orgUser.role)
+  const permissions = this.formatPermissions(orgUser.role)
 
   // Check if permissions have changed
   const shouldUpdate = shouldUpdatePermissions(permissions, orgUser.permissions)
