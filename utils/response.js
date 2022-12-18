@@ -11,16 +11,16 @@ module.exports.customResponse = (message, data, status) => {
   const rest = {}
 
   if (data) {
-    rest.pagination = {
-      totalData: data.totalData,
-      totalPages: data.totalPages,
-      page: data.page,
-      limit: data.limit,
+    if (data.totalData || data.totalPages || data.page || data.limit) {
+      rest.pagination = {
+        page: data.page,
+        limit: data.limit,
+        totalData: data.totalData,
+        totalPages: data.totalPages,
+      }
     }
 
-    if (data.response) {
-      data = data.response
-    }
+    if (data.response) data = data.response
   }
 
   return {

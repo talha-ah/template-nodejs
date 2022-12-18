@@ -6,15 +6,15 @@ module.exports.errors = {
   idRequired: "Id is required",
   idLength: "Id length must be 24 characters",
 
+  typeDate: "Value must be a Date",
   typeArray: "Value must be a Array",
-  typeArray: "Type must be an array",
   typeString: "Value must be a string",
   typeNumber: "Value must be a number",
   typeObject: "Value must be an object",
   typeBoolean: "Value must be a boolean",
 
-  tokenInvalid: "Invalid token",
   tokenRequired: "Token is required",
+  tokenInvalid: "Invalid OR expired token",
   tokenInvalidReset: "Reset code is incorrect",
   tokenNotFound: "Unauthorized access: Token not found",
 
@@ -69,6 +69,11 @@ module.exports.errors = {
 
   keyRequired: "Key is required",
   nameRequired: "Name is required",
+  roleRequired: "Role is required",
+  nameRequired: "Name is required",
+  imageRequired: "Image is required",
+  phoneRequired: "Phone is required",
+  statusInvalid: "Status is invalid",
   imageRequired: "Image is required",
   bucketRequired: "Bucket is required",
   fcmRequired: "Fcm token is required",
@@ -76,6 +81,7 @@ module.exports.errors = {
   lastNameRequired: "Last name is required",
   invalidInvite: "Invalid OR expired invite",
   firstNameRequired: "First name is required",
+  currencyTypeInvalid: "Currency type is invalid",
   invalidStatus: "Status must be active or inactive",
   eighteenYearsOld: "You must be 18 years old or above",
   invalidInterval: "Interval must be either week, month, or year",

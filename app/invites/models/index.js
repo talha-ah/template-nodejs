@@ -17,6 +17,7 @@ const model = new Schema(
       required: true,
     },
     organizationId: {
+      index: true,
       required: true,
       ref: "organization",
       type: mongoose.Types.ObjectId,

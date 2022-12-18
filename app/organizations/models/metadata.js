@@ -4,9 +4,10 @@ const Schema = mongoose.Schema
 const model = new Schema(
   {
     organizationId: {
-      type: Schema.Types.ObjectId,
+      index: true,
       required: true,
       ref: "organization",
+      type: Schema.Types.ObjectId,
     },
   },
   { versionKey: false, timestamps: true }

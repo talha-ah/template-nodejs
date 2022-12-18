@@ -83,17 +83,19 @@ module.exports = {
   },
 
   toTitleCase: (str) => {
-    if (str) {
-      str = str.charAt(0).toUpperCase() + str.slice(1)
-    }
+    if (str) str = str.charAt(0).toUpperCase() + str.slice(1)
+
     return str
   },
 
-  convertUnderscoreToWords: (str) => {
-    str = str.split("_")
-    str = str.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    return str.join(" ")
+  replaceDelimeter: (str, delimeter = "_") => {
+    let arr = str.split(delimeter)
+    arr = arr.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    return arr.join(" ")
   },
+
+  // Helper for console.log
+  log: (value) => console.log(`${value}`, value),
 
   getName: (user) => {
     let name = user.firstName
@@ -154,6 +156,21 @@ module.exports = {
       throw new CustomError(message, 405)
     }
     return value
+  },
+
+  checkDateOfBirth: (date, old = 18) => {
+    if (!date) return false
+
+    date = date * 1000
+
+    let eighteenYearsDays = dayjs().subtract(old, "year")
+    let toNowDays = dayjs(date)
+
+    if (toNowDays.isAfter(eighteenYearsDays)) {
+      return null
+    }
+
+    return date
   },
 
   // Call axios

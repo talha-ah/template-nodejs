@@ -1,6 +1,8 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
+const { STATUS } = require("../../../utils/constants")
+
 const model = new Schema(
   {
     name: {
@@ -18,13 +20,37 @@ const model = new Schema(
     logo: {
       type: String,
     },
+    address: {
+      addressOne: {
+        type: String,
+      },
+      addressTwo: {
+        type: String,
+      },
+      addressThree: {
+        type: String,
+      },
+      zip: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      country: {
+        type: String,
+      },
+    },
     users: [
       {
         _id: false,
         userId: {
-          type: Schema.Types.ObjectId,
+          index: true,
           ref: "user",
           required: true,
+          type: Schema.Types.ObjectId,
         },
         role: {
           type: String,
@@ -42,8 +68,8 @@ const model = new Schema(
     ],
     status: {
       type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+      enum: STATUS,
+      default: STATUS[0],
     },
   },
   { versionKey: false, timestamps: true }

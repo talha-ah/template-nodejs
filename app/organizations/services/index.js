@@ -13,6 +13,16 @@ const formatPermissions = (role) => {
   return permissions
 }
 
+const shouldUpdatePermissions = (permissions, userPermissions) => {
+  let needUpdate = false
+
+  Object.keys(permissions).forEach((key) => {
+    if (!userPermissions[key]) needUpdate = true
+  })
+
+  return needUpdate
+}
+
 module.exports.getAll = async (data) => {
   let query = {
     status: { $ne: "inactive" },
@@ -39,6 +49,8 @@ module.exports.getAll = async (data) => {
 
 module.exports.getOne = async (data) => {
   const org = await Model.findById(data.organizationId).select("-users").lean()
+
+  if (!org) throw new CustomError(errors.organizationNotFound, 400)
 
   return org
 }
@@ -230,8 +242,13 @@ module.exports.getUserPermissions = async (data) => {
 
   if (!orgUser) throw new CustomError(errors.userNotFound, 400)
 
-  if (!orgUser.permissions) {
-    orgUser.permissions = formatPermissions(orgUser.role)
+  const permissions = formatPermissions(orgUser.role)
+
+  // Check if permissions have changed
+  const shouldUpdate = shouldUpdatePermissions(permissions, orgUser.permissions)
+
+  if (!orgUser.permissions || shouldUpdate) {
+    orgUser.permissions = permissions
 
     // Update user permissions
     await this.updateUserPermissions({

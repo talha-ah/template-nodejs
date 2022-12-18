@@ -1,6 +1,8 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
+const { THEME, USER_STATUS, USER_ROLE } = require("../../../utils/constants")
+
 const model = new Schema(
   {
     firstName: {
@@ -12,6 +14,7 @@ const model = new Schema(
     },
     email: {
       trim: true,
+      index: true,
       type: String,
       unique: true,
       required: true,
@@ -41,20 +44,20 @@ const model = new Schema(
     },
     theme: {
       trim: true,
+      enum: THEME,
       type: String,
-      enum: ["light", "dark", "system"],
-      default: "light",
+      default: THEME[0],
     },
     role: {
       trim: true,
       type: String,
-      enum: ["user", "superadmin"],
-      default: "user",
+      enum: USER_ROLE,
+      default: USER_ROLE[0],
     },
     status: {
       type: String,
-      enum: ["pending", "active", "inactive"],
-      default: "pending",
+      enum: USER_STATUS,
+      default: USER_STATUS[0],
     },
   },
   { versionKey: false, timestamps: true }
