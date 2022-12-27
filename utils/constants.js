@@ -13,3 +13,12 @@ module.exports.TOKEN_TYPES = [
   "refresh-token",
   "recover-password",
 ]
+
+module.exports.DATE_FORMATS = [
+  "DD-MM-YYYY",
+  "DD/MM/YYYY",
+  "MM-DD-YYYY",
+  "MM/DD/YYYY",
+  "YYYY-MM-DD",
+  "YYYY/MM/DD",
+]

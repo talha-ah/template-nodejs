@@ -37,13 +37,13 @@ const schemas = {
           "string.empty": errors.emailRequired,
           "any.required": errors.emailRequired,
         }),
-      phone: Joi.string().optional().allow("").messages({}).messages({
+      phone: Joi.string().optional().allow("").messages({
         "string.base": errors.typeString,
       }),
-      image: Joi.string().optional().allow("").messages({}).messages({
+      image: Joi.string().optional().allow("").messages({
         "string.base": errors.typeString,
       }),
-      gender: Joi.string().optional().allow("").messages({}).messages({
+      gender: Joi.string().optional().allow("").messages({
         "string.base": errors.typeString,
       }),
       dob: Joi.string()
