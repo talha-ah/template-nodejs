@@ -96,6 +96,7 @@ module.exports.texts = {
   categories: "Categories",
   organizations: "Organizations",
   notifications: "Notifications",
+  orgUsers: "Organization Users",
 
   fetchProfile: "Profile",
   updateTheme: "Theme Updated",
