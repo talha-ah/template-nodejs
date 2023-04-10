@@ -10,13 +10,6 @@ module.exports.PERMISSIONS = {
         regex: /wallet/,
       },
     ],
-    modules: {
-      Dashboard: {
-        description: "Dashboard",
-        options: [],
-        settings: [],
-      },
-    },
   },
   admin: {
     routes: [
@@ -37,13 +30,6 @@ module.exports.PERMISSIONS = {
         regex: /wallet/,
       },
     ],
-    modules: {
-      Dashboard: {
-        description: "Dashboard",
-        options: ["overview", "users"],
-        settings: [],
-      },
-    },
   },
   superadmin: {
     routes: [
@@ -64,30 +50,50 @@ module.exports.PERMISSIONS = {
         regex: /invites/,
       },
     ],
-    modules: {
-      Dashboard: {
-        description: "Dashboard",
-        options: ["overview", "users", "organizations"],
-        settings: [],
+  },
+  general: {
+    routes: [
+      {
+        methods: ["ALL"],
+        regex: /auth/,
+      },
+      {
+        methods: ["ALL"],
+        regex: /profile/,
+      },
+      {
+        methods: ["ALL"],
+        regex: /notifications/,
+      },
+      {
+        methods: ["ALL"],
+        regex: /upload/,
+      },
+    ],
+  },
+  permissions: {
+    Dashboard: {
+      permission: "hidden",
+      description: "Dashboard",
+      modules: {
+        Users: "hidden",
+        Overview: "hidden",
+      },
+      settings: {
+        Wallet: "hidden",
+        Profile: "hidden",
+        Organization: "hidden",
+        Notifications: "hidden",
+      },
+      // Will not be in the DB, but will be used to check if the user has access to the route
+      routes: {
+        Users: ["users"],
+        Overview: ["overview"],
+        Wallet: ["wallet"],
+        Profile: ["profile"],
+        Organization: ["organization"],
+        Notifications: ["notifications"],
       },
     },
   },
-  generalRoutes: [
-    {
-      methods: ["ALL"],
-      regex: /auth/,
-    },
-    {
-      methods: ["ALL"],
-      regex: /profile/,
-    },
-    {
-      methods: ["ALL"],
-      regex: /notifications/,
-    },
-    {
-      methods: ["ALL"],
-      regex: /upload/,
-    },
-  ],
 }

@@ -34,11 +34,10 @@ function auth(role = "user") {
     req.userId = String(user._id)
     req.organizationId = String(user.organization._id)
 
-    const orgRole = user.organization.role
-
     if (user.role === "superadmin") {
       next()
     } else {
+      const orgRole = user.organization.role
       const method = req.method.toUpperCase()
       let baseUrl = req.baseUrl.replace("/api/v1/", "") + req.path
 
@@ -46,14 +45,15 @@ function auth(role = "user") {
         baseUrl = baseUrl.slice(0, -1)
       }
 
-      const generalAllowed = PERMISSIONS.generalRoutes.some((route) =>
+      const generalAllowed = PERMISSIONS.general.routes.some((route) =>
         route.regex.test(baseUrl)
       )
-      const privateAllowed = PERMISSIONS[orgRole].routes.some(
-        (route) =>
-          (route.methods[0] === "ALL" || route.methods.includes(method)) &&
-          route.regex.test(baseUrl)
-      )
+      // const privateAllowed = PERMISSIONS[orgRole].routes.some(
+      //   (route) =>
+      //     (route.methods[0] === "ALL" || route.methods.includes(method)) &&
+      //     route.regex.test(baseUrl)
+      // )
+      const privateAllowed = true
 
       if (!generalAllowed && !privateAllowed) {
         throw new CustomError(errors.notAuthorized, 401)

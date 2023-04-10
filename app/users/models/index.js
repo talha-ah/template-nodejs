@@ -39,8 +39,18 @@ const model = new Schema(
       type: String,
     },
     lastLogin: {
-      type: Date,
-      default: Date.now,
+      ip: {
+        type: String,
+      },
+      timestamp: {
+        type: Date,
+        default: new Date(),
+      },
+      organizationId: {
+        required: false,
+        ref: "organization",
+        type: mongoose.Types.ObjectId,
+      },
     },
     theme: {
       trim: true,

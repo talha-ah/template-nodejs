@@ -12,44 +12,45 @@ const Model = require("../models")
 const AuthService = require("../../auth/services")
 const UserService = require("../../users/services")
 const OrgService = require("../../organizations/services")
+const OrgUserService = require("../../organization-user/services")
 
 const getInviteMessage = (organizationName, invite) => {
   return `You have been invited to join ${organizationName} on ${ENV.APP_NAME}. The invite will expire in 24 hours. Please accept this invite by clicking on the button below or copy and paste the following url in your browser:<br /><br /><a target="_blank" href=${process.env.CLIENT_URL}/auth/accept-invite?token=${invite._id}>${process.env.CLIENT_URL}/auth/accept-invite?token=${invite._id}</a>`
 }
 
 module.exports.getAll = async (data) => {
-  data.page = +data.page || 1
-  data.limit = +data.limit || +ENV.LIMIT
+  const page = +data.page || 1
+  const limit = +data.limit || +ENV.LIMIT
 
   const query = {
     organizationId: data.organizationId,
   }
 
   const response = await Model.find(query)
-    .skip((data.page - 1) * data.limit)
-    .limit(data.limit)
+    .skip((page - 1) * limit)
+    .limit(limit)
     .lean()
 
   const totalData = await Model.find(query).countDocuments()
 
   return {
-    page: data.page,
-    limit: data.limit,
+    page,
+    limit,
     totalData,
-    totalPages: Math.ceil(totalData / data.limit),
+    totalPages: Math.ceil(totalData / limit),
     response,
   }
 }
 
 module.exports.createOne = async (data) => {
-  let organization = await OrgService.getOne(data)
+  const organization = await OrgService.getOne(data)
 
   // Check if user already exists
   let user = await UserService.getOneByEmail(data.email, false)
   if (user) {
-    let exists = await OrgService.checkUserExists({
-      ...data,
+    const exists = await OrgUserService.checkUserExists({
       userId: user._id,
+      organizationId: data.organizationId,
     })
     if (exists) {
       throw new CustomError(errors.userAlreadyExistsInOrganization, 400)
@@ -96,7 +97,7 @@ module.exports.deleteInviteWithoutAuth = async (data) => {
 
 module.exports.checkInvite = async (data) => {
   // Check if invite already exists
-  let invite = await Model.findById(data.token).lean()
+  const invite = await Model.findById(data.token).lean()
   if (!invite) throw new CustomError(errors.invalidInvite, 400)
 
   const inviteHour = dayjs(invite.updatedAt)
@@ -112,15 +113,15 @@ module.exports.checkInvite = async (data) => {
     // Add user to the organization if he/she already exists
     userExists = true
 
-    let exists = await OrgService.checkUserExists({
-      ...data,
+    let exists = await OrgUserService.checkUserExists({
       userId: user._id,
+      organizationId: invite.organizationId,
     })
     if (exists) {
       throw new CustomError(errors.userAlreadyExistsInOrganization, 400)
     }
 
-    await OrgService.addUser({
+    await OrgUserService.addUser({
       role: "user",
       userId: user._id,
       organizationId: invite.organizationId,
@@ -137,7 +138,7 @@ module.exports.checkInvite = async (data) => {
 
 module.exports.acceptInvite = async (data) => {
   // Check if invite already exists
-  let invite = await Model.findById(data.token).lean()
+  const invite = await Model.findById(data.token).lean()
   if (!invite) throw new CustomError(errors.invalidInvite, 400)
 
   const inviteHour = dayjs(invite.updatedAt)
@@ -146,14 +147,14 @@ module.exports.acceptInvite = async (data) => {
 
   if (diff > 24) throw new CustomError(errors.invalidInvite, 400)
 
-  let organization = await OrgService.getOne({
+  const organization = await OrgService.getOne({
     organizationId: invite.organizationId,
   })
   if (!organization) throw new CustomError(errors.organizationNotFound, 400)
 
   let user = await UserService.getOneByEmail(invite.email, false)
   if (user) {
-    let exists = await OrgService.checkUserExists({
+    let exists = await OrgUserService.checkUserExists({
       userId: user._id,
       organizationId: invite.organizationId,
     })
@@ -161,7 +162,7 @@ module.exports.acceptInvite = async (data) => {
       throw new CustomError(errors.userAlreadyExistsInOrganization, 400)
     }
 
-    await OrgService.addUser({
+    await OrgUserService.addUser({
       role: "user",
       userId: user._id,
       organizationId: invite.organizationId,
@@ -180,13 +181,12 @@ module.exports.acceptInvite = async (data) => {
     })
 
     // Create user own organization
-    await OrgService.createOne({
-      name: invite.firstName,
+    await OrgUserService.createOne({
       email: invite.email,
-      users: [{ userId: user._id, role: "admin", owner: true }],
+      name: invite.firstName,
     })
 
-    await OrgService.addUser({
+    await OrgUserService.addUser({
       role: "user",
       userId: user._id,
       organizationId: invite.organizationId,
@@ -223,6 +223,7 @@ module.exports.rejectInvite = async (data) => {
 module.exports.resendInvite = async (data) => {
   const organization = await OrgService.getOne(data)
 
+  // TODO: Delete and create new invite
   const invite = await Model.findByIdAndUpdate(
     data.token,
     {

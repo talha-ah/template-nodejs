@@ -4,6 +4,7 @@ const ObjectId = require("mongodb").ObjectId
 const TokenModel = require("../models/token")
 const UserService = require("../../users/services")
 const OrgService = require("../../organizations/services")
+const OrgUserService = require("../../organization-user/services")
 
 const { errors } = require("../../../utils/texts")
 const { emailService } = require("../../../utils/mail")
@@ -24,12 +25,11 @@ const getToken = async (data, throwError = true) => {
 const createToken = async (data) => {
   const token = await TokenModel.findOneAndUpdate(
     {
+      type: data.type,
       email: data.email,
     },
     {
-      $set: {
-        type: data.type,
-      },
+      $set: {},
     },
     { new: true, upsert: true }
   )
@@ -52,6 +52,7 @@ const createRefreshToken = async (data) => {
   ).lean()
   if (!token) throw new CustomError(errors.error, 400)
 
+  // TODO: hash token
   return String(token._id)
 }
 
@@ -61,17 +62,12 @@ const deleteToken = async (data) => {
   return
 }
 
-module.exports.loginResponse = async (user, orgId) => {
+module.exports.loginResponse = async (user, orgId, ip = "") => {
   delete user.password
 
-  user.lastLogin = new Date()
-
-  UserService.updateOne({
+  const organizations = await OrgUserService.getUserOrganizations({
     userId: user._id,
-    lastLogin: user.lastLogin,
   })
-
-  const organizations = await OrgService.getAll({ userId: user._id })
   if (organizations.length < 1) {
     throw new CustomError(errors.noOrganization, 400)
   }
@@ -86,9 +82,12 @@ module.exports.loginResponse = async (user, orgId) => {
     if (organization) user.organization = organization
   }
 
-  user.role = user.organization.role
-  user.owner = user.organization.owner
-  user.permissions = await OrgService.getUserPermissions({
+  if (!user.organization) {
+    throw new CustomError(errors.noOrganization, 400)
+  }
+
+  UserService.updateLastLogin({
+    ip,
     userId: user._id,
     organizationId: user.organization._id,
   })
@@ -98,8 +97,8 @@ module.exports.loginResponse = async (user, orgId) => {
   const refreshToken = await createRefreshToken({ user })
 
   return {
-    access_token: accessToken,
-    refresh_token: refreshToken,
+    accessToken,
+    refreshToken,
     user,
   }
 }
@@ -174,17 +173,16 @@ module.exports.register = async (data) => {
   const user = await UserService.createOne(data)
 
   // Create organization
-  await OrgService.createOne({
-    name: data.firstName,
+  const organization = await OrgService.createOne({
     email: data.email,
-    users: [
-      {
-        owner: true,
-        role: "admin",
-        userId: user._id,
-        permissions: OrgService.formatPermissions("admin"),
-      },
-    ],
+    name: data.firstName,
+  })
+
+  await OrgUserService.addUser({
+    owner: true,
+    role: "admin",
+    userId: user._id,
+    organizationId: organization._id,
   })
 
   const token = await createToken({
@@ -204,7 +202,7 @@ module.exports.register = async (data) => {
     }),
   })
 
-  const response = await this.loginResponse(user)
+  const response = await this.loginResponse(user, organization._id)
 
   return response
 }
@@ -241,8 +239,8 @@ module.exports.verifyEmail = async (data) => {
   const token = await getToken(data)
 
   const user = await UserService.updateOneByEmail({
-    email: token.email,
     status: "active",
+    email: token.email,
   })
 
   await deleteToken(data)

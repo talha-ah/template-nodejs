@@ -3,7 +3,7 @@ const { CustomError } = require("../../../utils/customError")
 const { hash, compareHash } = require("../../../utils/helpers")
 
 const UserService = require("../../users/services")
-const OrgService = require("../../organizations/services")
+const OrgUserService = require("../../organization-user/services")
 
 module.exports.fetchProfile = async (data) => {
   const user = await UserService.getOne(data)
@@ -48,7 +48,7 @@ module.exports.deactivateProfile = async (data) => {
     status: "inactive",
   })
 
-  await OrgService.deactivateUserOrganizations(data)
+  await OrgUserService.deactivateUserOrganizations(data)
 
   return
 }

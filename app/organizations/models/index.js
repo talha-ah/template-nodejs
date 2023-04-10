@@ -43,29 +43,6 @@ const model = new Schema(
         type: String,
       },
     },
-    users: [
-      {
-        _id: false,
-        userId: {
-          index: true,
-          ref: "user",
-          required: true,
-          type: Schema.Types.ObjectId,
-        },
-        role: {
-          type: String,
-          enum: ["admin", "user"],
-          default: "user",
-        },
-        owner: {
-          type: Boolean,
-          default: false,
-        },
-        permissions: {
-          type: Object,
-        },
-      },
-    ],
     status: {
       type: String,
       enum: STATUS,

@@ -3,12 +3,9 @@ const router = require("express").Router()
 const controller = require("../controllers")
 const auth = require("../../../middlewares/auth")
 
-router.get("/metadata", auth(), controller.getMetadata)
+router.use("/users", require("../../organization-user"))
 
-router.get("/users", auth(), controller.getUsers)
-router.put("/users", auth(), controller.updateUsers)
-router.put("/users/:id", auth(), controller.updateUser)
-router.delete("/users/:id", auth(), controller.removeUser)
+router.get("/metadata", auth(), controller.getMetadata)
 
 router.get("/", auth(), controller.getAll)
 router.put("/", auth(), controller.updateOne)
